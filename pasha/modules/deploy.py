@@ -6,22 +6,10 @@ SPDX-License-Identifier: Apache-2.0
 
 import logging
 import os
-<<<<<<< HEAD
-import shutil
-
-from omegaconf import OmegaConf
-
-from pasha import exceptions
-from pasha.archive import unpack
-from pasha.mount import mount
-from pasha.mount import umount
-from pasha.modules.base import ModuleBase
-=======
 
 from pasha.modules.base import ModuleBase
 from pasha.mount import mount
 from pasha.mount import umount
->>>>>>> 9ac3dfe (add modules)
 
 
 class Deploy(ModuleBase):
@@ -31,11 +19,7 @@ class Deploy(ModuleBase):
         self.config = config
         self.stage = stage
         self.rootfs = self.state.workspace.joinpath(
-<<<<<<< HEAD
-                f"{self.config.name}/rootfs")
-=======
             f"{self.config.name}/rootfs")
->>>>>>> 9ac3dfe (add modules)
 
         self.logging = logging.getLogger(__name__)
 
@@ -51,13 +35,10 @@ class Deploy(ModuleBase):
         self.rootfs.mkdir(parents=True, exist_ok=True)
         mount(device, self.rootfs)
 
-<<<<<<< HEAD
-=======
     def validate(self):
         pass
 
 
->>>>>>> 9ac3dfe (add modules)
 class Undeploy(ModuleBase):
 
     def __init__(self, state, config, stage):
@@ -65,11 +46,7 @@ class Undeploy(ModuleBase):
         self.config = config
         self.stage = stage
         self.rootfs = self.state.workspace.joinpath(
-<<<<<<< HEAD
-                f"{self.config.name}/rootfs")
-=======
             f"{self.config.name}/rootfs")
->>>>>>> 9ac3dfe (add modules)
 
         self.logging = logging.getLogger(__name__)
 
@@ -79,9 +56,5 @@ class Undeploy(ModuleBase):
         self.logging.info(f"UnMounting {device}.")
         umount(self.rootfs)
 
-<<<<<<< HEAD
-
-=======
     def validate(self):
         pass
->>>>>>> 9ac3dfe (add modules)

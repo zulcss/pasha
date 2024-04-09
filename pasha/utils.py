@@ -68,15 +68,6 @@ def run_chroot_command(args, rootfs, efi=None, data=None, env=None,
                        capture=capture,
                        shell=shell)
 
-def fetch(source):
-    a = urlparse(source)
-    path = os.path.basename(a.path)
-
-    LOG.info(f"Fetching from {source}.")
-    run_command(["curl", source, "-o", path])
-    return path
-<<<<<<< HEAD
-=======
 
 def fetch(source):
     a = urlparse(source)
@@ -86,7 +77,6 @@ def fetch(source):
     run_command(["curl", source, "-o", path])
     return path
 
->>>>>>> 9ac3dfe (add modules)
 
 def which(cmd):
     return shutil.which(cmd)

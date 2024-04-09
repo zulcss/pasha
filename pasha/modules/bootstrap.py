@@ -8,11 +8,6 @@ import logging
 import os
 import shutil
 
-<<<<<<< HEAD
-from omegaconf import OmegaConf
-
-=======
->>>>>>> 9ac3dfe (add modules)
 from pasha import exceptions
 from pasha.modules.base import ModuleBase
 from pasha import utils
@@ -66,19 +61,11 @@ class Bootstrap(ModuleBase):
             repo = self.workspace.joinpath(repo)
         customize_hooks = self.stage.get("customize_hooks")
         if customize_hooks:
-<<<<<<< HEAD
-             cmd.extend([f"--customize-hook={hook}"
-                        for hook in customize_hooks])
-        components = self.stage.get("components")
-        if components:
-             cmd.extend([f"--components={','.join(components)}"])
-=======
             cmd.extend([f"--customize-hook={hook}"
                        for hook in customize_hooks])
         components = self.stage.get("components")
         if components:
             cmd.extend([f"--components={','.join(components)}"])
->>>>>>> 9ac3dfe (add modules)
         variant = self.stage.get("variant")
         if variant:
             cmd.extend([f"--variant={variant}"])
@@ -117,3 +104,6 @@ class Bootstrap(ModuleBase):
             # include our mirror from the manifest.
             cmd.extend([repo])
         utils.run_command(cmd)
+
+    def validate(self):
+        pass
