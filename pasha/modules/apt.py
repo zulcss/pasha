@@ -41,6 +41,7 @@ class AptRemove(AptBase):
     def validate(self):
         pass
 
+
 class AptUpdate(AptBase):
     def run(self):
         self.apt.refresh()

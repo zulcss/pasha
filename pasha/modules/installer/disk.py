@@ -7,6 +7,7 @@ SPDX-License-Identifier: Apache-2.0
 import logging
 import os
 import shutil
+import shlex
 
 from pasha.modules.base import ModuleBase
 from pasha import utils
@@ -42,6 +43,9 @@ class Parted(ModuleBase):
                     utils.run_command(
                         ["parted", "-a", "optimal", "-s", self.device, "--",
                          "set", str(index), flag, "on"])
+            if part.id:
+                cmd = f"sfdisk --part-type {self.device} {index} {part.id}"
+                utils.run_command(shlex.split(cmd))
 
     def validate(self):
         pass
@@ -106,16 +110,20 @@ class Filesystem(ModuleBase):
         self.stage = stage
 
         self.logging = logging.getLogger(__name__)
-        self.device = self.config.params.disk
-        self.filesystems = self.stage.filesystems
 
     def run(self):
         self.logging.info("Running filesystems.")
 
-        for index, part in enumerate(self.filesystems, start=1):
-            fs = self._get_partition_device(index, self.device)
-            if os.path.exists(fs):
-                self._mkfs(fs, part.fs, part.label, part.name)
+        device = self.config.params.disk
+        if device:
+            filesystems = self.stage.get("filesystems")
+            if filesystems:
+                for index, part in enumerate(filesystems, start=1):
+                    fs = self._get_partition_device(index, device)
+                    if os.path.exists(fs):
+                        self._mkfs(fs, part.fs, part.label, part.name)
+        else:
+            raise Exception("Disk image is not specified.")
 
     def validate(self):
         pass
