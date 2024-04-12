@@ -7,9 +7,9 @@ SPDX-License-Identifier: Apache-2.0
 import logging
 import os
 
+from pasha import utils
 from pasha.modules.base import ModuleBase
 from pasha.mount import mount
-from pasha import utils
 
 
 class Unpack(ModuleBase):
@@ -23,8 +23,7 @@ class Unpack(ModuleBase):
         self.logging = logging.getLogger(__name__)
         self.device = self.config.params.disk
         self.source = self.config.params.source
-        self.rootfs = self.state.workspace.joinpath(
-            f"{self.config.name}/rootfs")
+        self.rootfs = self.state.workspace.joinpath(f"{self.config.name}/rootfs")
 
     def run(self):
         self.logging.info("Unpacking source.")
@@ -40,9 +39,16 @@ class Unpack(ModuleBase):
 
         self.logging.info(f"Unpacking {self.source}.")
         utils.run_command(
-            ["tar", "-C", self.rootfs,
-             "--exclude=./dev/*",
-             "-zxf", self.source, "--numeric-owner"])
+            [
+                "tar",
+                "-C",
+                self.rootfs,
+                "--exclude=./dev/*",
+                "-zxf",
+                self.source,
+                "--numeric-owner",
+            ]
+        )
 
     def validate(self):
         pass

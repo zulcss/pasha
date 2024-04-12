@@ -1,0 +1,4 @@
+tox>=4.14.0 # MIT
+pycodestyle>=2.11.1 # MIT
+isort>=5.13.2 # MIT
+black>=24.2.0 # MIT

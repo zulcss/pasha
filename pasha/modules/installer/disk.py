@@ -6,11 +6,11 @@ SPDX-License-Identifier: Apache-2.0
 
 import logging
 import os
-import shutil
 import shlex
+import shutil
 
-from pasha.modules.base import ModuleBase
 from pasha import utils
+from pasha.modules.base import ModuleBase
 
 
 class Parted(ModuleBase):
@@ -29,20 +29,41 @@ class Parted(ModuleBase):
         self.logging.info("Running parted.")
 
         self.logging.info("Creating gpt disk label.")
-        utils.run_command(
-            ["parted", self.device, "--script", "mklabel", "gpt"])
+        utils.run_command(["parted", self.device, "--script", "mklabel", "gpt"])
 
         self.logging.info("Creating parttiions.")
         for index, part in enumerate(self.slices, start=1):
             self.logging.info(f"Creating partition {index}: {part.name}")
             utils.run_command(
-                ["parted", "-a", "optimal", "-s", self.device, "--", "mkpart",
-                 part.name, part.start, part.end])
+                [
+                    "parted",
+                    "-a",
+                    "optimal",
+                    "-s",
+                    self.device,
+                    "--",
+                    "mkpart",
+                    part.name,
+                    part.start,
+                    part.end,
+                ]
+            )
             if len(part.flags) != 0:
                 for flag in part.flags:
                     utils.run_command(
-                        ["parted", "-a", "optimal", "-s", self.device, "--",
-                         "set", str(index), flag, "on"])
+                        [
+                            "parted",
+                            "-a",
+                            "optimal",
+                            "-s",
+                            self.device,
+                            "--",
+                            "set",
+                            str(index),
+                            flag,
+                            "on",
+                        ]
+                    )
             if part.id:
                 cmd = f"sfdisk --part-type {self.device} {index} {part.id}"
                 utils.run_command(shlex.split(cmd))
@@ -69,8 +90,7 @@ class Reparted(ModuleBase):
         device = self.config.params.disk
         if device:
             if os.path.exists(device):
-                self.logging.info(
-                    f"Found {device} from a previosu run.")
+                self.logging.info(f"Found {device} from a previosu run.")
                 os.unlink(device)
             size = self.stage.get("size")
             if size is None:
@@ -92,8 +112,8 @@ class Reparted(ModuleBase):
                     "--discard=no",
                     "--no-pager",
                     str(device),
-                    ]
-                )
+                ]
+            )
         else:
             raise Exception("Disk image is not specified.")
 
@@ -133,11 +153,9 @@ class Filesystem(ModuleBase):
 
         if fs_type == "vfat":
             # vfat is a special case
-            utils.run_command(
-                ["mkfs.vfat", "-F", "32", "-n", label, fs])
+            utils.run_command(["mkfs.vfat", "-F", "32", "-n", label, fs])
         else:
-            utils.run_command(
-                ["mkfs", "-F", "-t", fs_type, "-L", label, fs])
+            utils.run_command(["mkfs", "-F", "-t", fs_type, "-L", label, fs])
 
     def _get_partition_device(self, number, device):
         """Get the parition device."""

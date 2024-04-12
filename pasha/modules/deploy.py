@@ -8,8 +8,7 @@ import logging
 import os
 
 from pasha.modules.base import ModuleBase
-from pasha.mount import mount
-from pasha.mount import umount
+from pasha.mount import mount, umount
 
 
 class Deploy(ModuleBase):
@@ -18,8 +17,7 @@ class Deploy(ModuleBase):
         self.state = state
         self.config = config
         self.stage = stage
-        self.rootfs = self.state.workspace.joinpath(
-            f"{self.config.name}/rootfs")
+        self.rootfs = self.state.workspace.joinpath(f"{self.config.name}/rootfs")
 
         self.logging = logging.getLogger(__name__)
 
@@ -45,8 +43,7 @@ class Undeploy(ModuleBase):
         self.state = state
         self.config = config
         self.stage = stage
-        self.rootfs = self.state.workspace.joinpath(
-            f"{self.config.name}/rootfs")
+        self.rootfs = self.state.workspace.joinpath(f"{self.config.name}/rootfs")
 
         self.logging = logging.getLogger(__name__)
 

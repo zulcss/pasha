@@ -6,8 +6,8 @@ SPDX-License-Identifier: Apache-2.0
 
 import logging
 
-from pasha.modules.base import ModuleBase
 from pasha import utils
+from pasha.modules.base import ModuleBase
 
 
 class User(ModuleBase):
@@ -16,8 +16,7 @@ class User(ModuleBase):
         self.state = state
         self.config = config
         self.stage = stage
-        self.rootfs = self.state.workspace.joinpath(
-            f"{self.config.name}/rootfs")
+        self.rootfs = self.state.workspace.joinpath(f"{self.config.name}/rootfs")
         self.logging = logging.getLogger(__name__)
 
     def run(self):
@@ -36,8 +35,7 @@ class User(ModuleBase):
             cmd += ["--home", f"/home/{username}"]
             cmd += ["--shell", "/bin/bash"]
 
-            utils.run_chroot_command(
-                ["useradd", *cmd, username], self.rootfs)
+            utils.run_chroot_command(["useradd", *cmd, username], self.rootfs)
 
     def validate(self):
         pass

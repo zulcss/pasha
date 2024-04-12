@@ -8,11 +8,10 @@ import logging
 import os
 import shutil
 
+from pasha import utils
 from pasha.archive import unpack
 from pasha.modules.base import ModuleBase
-from pasha.mount import mount
-from pasha.mount import umount
-from pasha import utils
+from pasha.mount import mount, umount
 
 
 class Unpack(ModuleBase):
@@ -21,8 +20,7 @@ class Unpack(ModuleBase):
         self.state = state
         self.config = config
         self.stage = stage
-        self.rootfs = self.state.workspace.joinpath(
-            f"{self.config.name}/rootfs")
+        self.rootfs = self.state.workspace.joinpath(f"{self.config.name}/rootfs")
 
         self.logging = logging.getLogger(__name__)
 
@@ -70,5 +68,4 @@ class Unpack(ModuleBase):
 
         if compression == "squashfs":
             self.logging.info("Unpacking squashfs image.")
-            utils.run_command(
-                ["unsquashfs", "-f", "-d", rootfs, source])
+            utils.run_command(["unsquashfs", "-f", "-d", rootfs, source])

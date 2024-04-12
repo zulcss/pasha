@@ -19,4 +19,5 @@ class PashaError(Exception):
 
 class ConfigError(PashaError):
     """Pasha cofiguration error."""
+
     pass

@@ -6,8 +6,8 @@ SPDX-License-Identifier: Apache-2.0
 
 import logging
 
-from pasha.modules.base import ModuleBase
 from pasha import utils
+from pasha.modules.base import ModuleBase
 
 
 class Copy(ModuleBase):
@@ -16,8 +16,7 @@ class Copy(ModuleBase):
         self.state = state
         self.config = config
         self.stage = stage
-        self.rootfs = self.state.workspace.joinpath(
-            f"{self.config.name}/rootfs")
+        self.rootfs = self.state.workspace.joinpath(f"{self.config.name}/rootfs")
         self.logging = logging.getLogger(__name__)
 
     def run(self):

@@ -8,9 +8,8 @@ import logging
 import os
 import shutil
 
-from pasha import exceptions
+from pasha import exceptions, utils
 from pasha.modules.base import ModuleBase
-from pasha import utils
 
 
 class Bootstrap(ModuleBase):
@@ -38,16 +37,11 @@ class Bootstrap(ModuleBase):
         if suite is None:
             raise exceptions.ConfigErrror("suite is not found.")
             if suite not in ["bookworm", "trixie", "testing", "sid"]:
-                raise exceptions.ConfigError(
-                    f"{suite} is not a supported  suite.")
+                raise exceptions.ConfigError(f"{suite} is not a supported  suite.")
 
         self.logging.info("Running mmdebstrap.")
 
-        cmd = [
-            self.mmdebstrap,
-            "--architecture", self.config.architecture,
-            "--verbose"
-        ]
+        cmd = [self.mmdebstrap, "--architecture", self.config.architecture, "--verbose"]
 
         # Extend mmdebstrap configuration options, see manpage for details.
         packages = self.stage.get("packages")
@@ -56,13 +50,11 @@ class Bootstrap(ModuleBase):
         repo = self.stage.get("repo")
         if repo:
             if not os.path.isfile(repo) and not os.path.exists():
-                raise exceptions.ConfigError(
-                    "Repo configuration is not a file")
+                raise exceptions.ConfigError("Repo configuration is not a file")
             repo = self.workspace.joinpath(repo)
         customize_hooks = self.stage.get("customize_hooks")
         if customize_hooks:
-            cmd.extend([f"--customize-hook={hook}"
-                       for hook in customize_hooks])
+            cmd.extend([f"--customize-hook={hook}" for hook in customize_hooks])
         components = self.stage.get("components")
         if components:
             cmd.extend([f"--components={','.join(components)}"])
@@ -77,12 +69,10 @@ class Bootstrap(ModuleBase):
             cmd.extend([f"--setup-hook={hook}" for hook in setup_hooks])
         extract_hooks = self.stage.get("extract_hooks")
         if extract_hooks:
-            cmd.extend([f"--extract-hook={hook}"
-                        for hook in extract_hooks])
+            cmd.extend([f"--extract-hook={hook}" for hook in extract_hooks])
         essential_hooks = self.stage.get("options.essential_hooks")
         if essential_hooks:
-            cmd.extend([f"--essential-hook={hook}"
-                        for hook in essential_hooks])
+            cmd.extend([f"--essential-hook={hook}" for hook in essential_hooks])
         apt_hooks = self.stage.get("apt_hooks")
         if apt_hooks:
             cmd.extend([f"--aptopt={hook}" for hook in apt_hooks])

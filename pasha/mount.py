@@ -9,10 +9,8 @@ from pasha import utils
 
 
 def mount(image, rootfs):
-    utils.run_command(
-        ["systemd-dissect", "-m", image, rootfs])
+    utils.run_command(["systemd-dissect", "-m", image, rootfs])
 
 
 def umount(rootfs):
-    utils.run_command(
-        ["systemd-dissect", "-u", rootfs])
+    utils.run_command(["systemd-dissect", "-u", rootfs])
