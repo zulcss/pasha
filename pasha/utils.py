@@ -9,37 +9,49 @@ import logging
 import os
 import shutil
 import subprocess
+import sys
 from urllib.parse import urlparse
 
 LOG = logging.getLogger(__name__)
 
 
-def run_command(args, data=None, env=None, capture=False, shell=False, **kwargs):
+def run_command(args, check=True, **kwargs):
+    """Run a command in a shell."""
     LOG.debug("Running %s" % args)
 
-    try:
-        if not capture:
-            stdout = None
-            stderr = None
-        else:
-            stdout = subprocess.PIPE
-            stderr = subprocess.PIP
-        stdin = subprocess.PIPE
-        sp = subprocess.Popen(args, stdout=stdout, stderr=stderr, stdin=stdin, **kwargs)
-        (out, err) = sp.communicate(data)
-    except OSError:
-        try:
-            out = out.decode("utf-8") if out else ""
-            err = err.decode("utf-8") if err else ""
-            raise Exception(f"Failed to run command {args}, out={out}, error={err}")
-        except UnboundLocalError:
-            raise Exception(args)
-    return (out, err)
+    outputs = ""
+    sp = subprocess.Popen(
+        args,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        stdin=subprocess.PIPE,
+        universal_newlines=True,
+        **kwargs,
+    )
+    while True:
+        output = sp.stdout.readline()
+        if output:
+            LOG.debug(output.rstrip("\n"))
+            outputs += output
+        if sp.poll() is not None:
+            break
 
+    # Read the remaining logs from stdout after process terminates
+    output = sp.stdout.read()
+    if output:
+        LOG.debug(output.rstrip("\n"))
+        outputs += output
 
-def run_chroot_command(
-    args, rootfs, efi=None, data=None, env=None, capture=None, shell=False, **kwargs
-):
+    ret = sp.poll()
+
+    if ret != 0:
+        LOG.error(f"Failed to run command {args}\n{outputs}")
+        if check:
+            sys.exit(1)
+
+    return ret, outputs.rstrip("\n")
+
+def run_chroot_command(args, rootfs, efi=None, **kwargs):
     """Run bubblewarap in a seperate namespace."""
     cmd = [
         "bwrap",
@@ -72,8 +84,7 @@ def run_chroot_command(
         cmd += ["--bind", f"{efi}/efi", "/efi", "--bind", f"{efi}/efi", "/boot/efi"]
 
     cmd += args
-    return run_command(cmd, data=None, env=None, capture=capture, shell=shell)
-
+    return run_command(cmd, **kwargs)
 
 def fetch(source):
     a = urlparse(source)
