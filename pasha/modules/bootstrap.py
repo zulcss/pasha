@@ -51,7 +51,7 @@ class Bootstrap(ModuleBase):
         if repo:
             if not os.path.isfile(repo) and not os.path.exists():
                 raise exceptions.ConfigError("Repo configuration is not a file")
-            repo = self.workspace.joinpath(repo)
+            repo = self.state.workspace.joinpath(repo)
         customize_hooks = self.stage.get("customize_hooks")
         if customize_hooks:
             cmd.extend([f"--customize-hook={hook}" for hook in customize_hooks])
