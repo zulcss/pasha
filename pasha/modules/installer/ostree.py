@@ -10,19 +10,15 @@ import os
 import pathlib
 import shlex
 import shutil
-import subprocess
 import sys
 
 from pasha import utils
 from pasha.modules.base import ModuleBase
 
 
-def ostree(*args, _input=None, **kwargs):
+def ostree(*args, **kwargs):
     args = list(args) + [f"--{k}={v}" for k, v in kwargs.items()]
-    print("ostree " + " ".join(args), file=sys.stderr)
-    subprocess.run(
-        ["ostree"] + args, encoding="utf-8", stdout=sys.stderr, input=_input, check=True
-    )
+    utils.run_command(["ostree"] + args, check=True)
 
 
 class OstreeInit(ModuleBase):
