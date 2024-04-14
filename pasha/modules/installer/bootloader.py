@@ -5,6 +5,7 @@ SPDX-License-Identifier: Apache-2.0
 """
 
 import logging
+import os
 import shutil
 
 from pasha import utils
@@ -19,6 +20,7 @@ class Bootloader(ModuleBase):
 
         self.logging = logging.getLogger(__name__)
         self.kernel_args = self.stage.kernel_args
+        self.uefi_driver = self.stage.get("uefi_driver", "")
         self.rootfs = self.state.workspace.joinpath(f"{self.config.name}/rootfs")
 
     def run(self):
@@ -28,7 +30,22 @@ class Bootloader(ModuleBase):
             ["bootctl", "install", "--no-variables", "--entry-token", "os-id"],
             self.rootfs,
             efi=self.rootfs,
+            boot=self.rootfs,
         )
+
+        # Set timeout for boot menu
+        with open(self.rootfs.joinpath("efi/loader/loader.conf"), "w") as f:
+            f.write("# Auto-genernated by ruck\n")
+            f.write("timeout 3\n")
+
+        # Install ext4 file system driver for UEFI
+        if self.uefi_driver == "ext4":
+            self.logging.info("Install ext4 file system driver for UEFI")
+            shutil.copytree(
+                self.rootfs.joinpath("usr/share/edk2/drivers"),
+                self.rootfs.joinpath("efi/EFI/systemd/drivers"),
+                dirs_exist_ok=True,
+            )
 
         # Should be only one kernel.
         for d in self.rootfs.glob("boot/vmlinuz-*"):
@@ -42,6 +59,7 @@ class Bootloader(ModuleBase):
             ["kernel-install", "add", kver, f"/boot/vmlinuz-{kver}"],
             self.rootfs,
             efi=self.rootfs,
+            boot=self.rootfs,
         )
 
     def validate(self):
@@ -55,6 +73,7 @@ class BootloaderOstree(ModuleBase):
         self.stage = stage
 
         self.logging = logging.getLogger(__name__)
+        self.uefi_driver = self.stage.get("uefi_driver", "")
         self.rootfs = self.state.workspace.joinpath(f"{self.config.name}/rootfs")
 
     def run(self):
@@ -62,16 +81,35 @@ class BootloaderOstree(ModuleBase):
 
         for d in self.rootfs.glob("ostree/deploy/debian/deploy/*.0"):
             repo_root = d
-        utils.run_chroot_command(["bootctl", "install"], repo_root, efi=self.rootfs)
+        utils.run_chroot_command(
+            [
+                "bootctl",
+                "install",
+                "--boot-path",
+                "/boot",
+                "--no-variables",
+                "--entry-token",
+                "os-id",
+            ],
+            repo_root,
+            efi=self.rootfs,
+            boot=self.rootfs,
+        )
 
         self.logging.info("Configuring bootloader.")
-        shutil.copytree(
-            self.rootfs.joinpath("boot/ostree"), self.rootfs.joinpath("efi/ostree")
-        )
-        shutil.copy2(
-            self.rootfs.joinpath("boot/loader/entries/ostree-1-debian.conf"),
-            self.rootfs.joinpath("efi/loader/entries/ostree-0-1.conf"),
-        )
+        # Set timeout for boot menu
+        with open(self.rootfs.joinpath("efi/loader/loader.conf"), "w") as f:
+            f.write("# Auto-genernated by ruck\n")
+            f.write("timeout 3\n")
+
+        # Install ext4 file system driver for UEFI
+        if self.uefi_driver == "ext4":
+            self.logging.info("Install ext4 file system driver for UEFI")
+            shutil.copytree(
+                os.path.join(repo_root, "usr/share/edk2/drivers"),
+                self.rootfs.joinpath("efi/EFI/systemd/drivers"),
+                dirs_exist_ok=True,
+            )
 
     def validate(self):
         pass
