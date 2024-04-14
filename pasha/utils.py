@@ -52,7 +52,7 @@ def run_command(args, check=True, **kwargs):
     return ret, outputs.rstrip("\n")
 
 
-def run_chroot_command(args, rootfs, efi=None, **kwargs):
+def run_chroot_command(args, rootfs, efi=None, boot=None, **kwargs):
     """Run bubblewarap in a seperate namespace."""
     cmd = [
         "bwrap",
@@ -81,8 +81,11 @@ def run_chroot_command(args, rootfs, efi=None, **kwargs):
         "/",
     ]
 
+    if boot:
+        cmd += ["--bind", f"{boot}/boot", "/boot"]
+
     if efi:
-        cmd += ["--bind", f"{efi}/efi", "/efi", "--bind", f"{efi}/efi", "/boot/efi"]
+        cmd += ["--bind", f"{efi}/efi", "/efi"]
 
     cmd += args
     return run_command(cmd, **kwargs)
