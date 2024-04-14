@@ -12,7 +12,6 @@ from pasha.mount import mount, umount
 
 
 class Deploy(ModuleBase):
-
     def __init__(self, state, config, stage):
         self.state = state
         self.config = config
@@ -38,7 +37,6 @@ class Deploy(ModuleBase):
 
 
 class Undeploy(ModuleBase):
-
     def __init__(self, state, config, stage):
         self.state = state
         self.config = config

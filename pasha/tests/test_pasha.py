@@ -23,6 +23,5 @@ from pasha.tests import base
 
 
 class TestPasha(base.TestCase):
-
     def test_something(self):
         pass

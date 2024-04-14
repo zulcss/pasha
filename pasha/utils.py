@@ -51,6 +51,7 @@ def run_command(args, check=True, **kwargs):
 
     return ret, outputs.rstrip("\n")
 
+
 def run_chroot_command(args, rootfs, efi=None, **kwargs):
     """Run bubblewarap in a seperate namespace."""
     cmd = [
@@ -85,6 +86,7 @@ def run_chroot_command(args, rootfs, efi=None, **kwargs):
 
     cmd += args
     return run_command(cmd, **kwargs)
+
 
 def fetch(source):
     a = urlparse(source)

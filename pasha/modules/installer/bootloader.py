@@ -12,7 +12,6 @@ from pasha.modules.base import ModuleBase
 
 
 class Bootloader(ModuleBase):
-
     def __init__(self, state, config, stage):
         self.state = state
         self.config = config

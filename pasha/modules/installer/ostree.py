@@ -42,7 +42,9 @@ class OstreeInit(ModuleBase):
         self.logging.info(f"Creating {self.repo}")
         if not self.repo.exists():
             self.repo.mkdir(parents=True, exist_ok=True)
-        utils.run_command(["ostree", "init", "--repo", self.repo, "--mode", f"{self.mode}"])
+        utils.run_command(
+            ["ostree", "init", "--repo", self.repo, "--mode", f"{self.mode}"]
+        )
 
     def validate(self):
         pass

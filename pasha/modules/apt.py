@@ -11,7 +11,6 @@ from pasha.packages import Apt
 
 
 class AptBase(ModuleBase):
-
     def __init__(self, state, config, stage):
         self.state = state
         self.config = config

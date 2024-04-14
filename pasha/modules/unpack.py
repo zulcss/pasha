@@ -15,7 +15,6 @@ from pasha.mount import mount, umount
 
 
 class Unpack(ModuleBase):
-
     def __init__(self, state, config, stage):
         self.state = state
         self.config = config
