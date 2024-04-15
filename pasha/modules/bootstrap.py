@@ -48,9 +48,11 @@ class Bootstrap(ModuleBase):
             cmd.extend([f"--include={', '.join(packages)}"])
         repo = self.stage.get("repo")
         if repo:
-            if not os.path.isfile(repo) and not os.path.exists():
-                raise exceptions.ConfigError("Repo configuration is not a file")
-            repo = self.state.workspace.joinpath(repo)
+            # repo should be a relative path to workspace or an absolute path
+            if not repo.startswith('/'):
+                repo = self.state.workspace.joinpath(repo)
+            if not os.path.isfile(repo):
+                raise exceptions.ConfigError(f"Repo configuration {repo} is not a file")
         customize_hooks = self.stage.get("customize_hooks")
         if customize_hooks:
             cmd.extend([f"--customize-hook={hook}" for hook in customize_hooks])
