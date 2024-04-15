@@ -1,0 +1,13 @@
+Building from source
+--------------------
+Install “git-buildpackage” and run the following steps:
+
+  gbp clone https://gitlab.com/wr-linux/tools/pash
+  cd pasha
+  gbp buildpackage
+
+We recommend you use pbuilder to make sure you build in a clean environment:
+
+  gbp buildpackage --git-pbuilder
+
+

@@ -1,0 +1,35 @@
+Source: pasha
+Section: python
+Priority: optional
+Maintainer: Chuck Short <charles.short@windriver.com>
+Build-Depends:
+ debhelper-compat (= 13),
+ dh-sequence-python3,
+ python3-setuptools,
+ python3-all,
+ python3-pbr,
+ python3-stevedore,
+ python3-yaml,
+ python3-oslotest,
+Standards-Version: 4.7.0
+Homepage: https://gitlab.com/wr-linux/tools/pasha
+
+Package: python3-pasha
+Architecture: all
+Multi-Arch: foreign
+Depends:
+ ${python3:Depends},
+ ${misc:Depends},
+ python3-stevedore,
+ python3-yaml,
+ bubblewrap,
+ python3-apt,
+ python3-rich,
+ python3-systemd
+Suggests:
+ python-pasha-doc,
+Description: Library for creating and managing virtual machines
+ Python library for managing baremetall installs and virtual machines
+ for ruck and tiler.
+ .
+ This package installs the library for Python 3.
