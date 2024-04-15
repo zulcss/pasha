@@ -149,6 +149,15 @@ class OstreeDeploy(ModuleBase):
             ostree_deploy.append(f"--karg={arg}")
         utils.run_command(ostree_deploy)
 
+        self.logging.info("Restoring /var")
+        for d in self.rootfs.glob("ostree/deploy/debian/deploy/*.0"):
+            repo_root = d
+        var_to = self.rootfs.joinpath("ostree/deploy/debian")
+        var_from = os.path.join(repo_root, "usr/rootdirs/var")
+        self.logging.debug(f"Copying {var_from} -> {var_to}")
+        cmd = f"cp -af {var_from} {var_to}"
+        utils.run_command(cmd, shell=True)
+
     def validate(self):
         pass
 
@@ -204,8 +213,15 @@ class OstreePrep(ModuleBase):
             self.rootfs.joinpath("var/lib/dpkg"),
             self.rootfs.joinpath("usr/share/dpkg/database"),
         )
-        shutil.rmtree(self.rootfs.joinpath("var"))
-        os.mkdir(self.rootfs.joinpath("var"), 0o775)
+        self.logging.info("Backup /var.")
+        dir_perm = 0o755
+        os.mkdir(self.rootfs.joinpath("usr/rootdirs"), dir_perm)
+        self.logging.debug("Moving /var to /usr/rootdirs.")
+        os.rename(
+            self.rootfs.joinpath("var"),
+            self.rootfs.joinpath("usr/rootdirs/var"),
+        )
+        os.mkdir(self.rootfs.joinpath("var"), dir_perm)
 
         # Setup and split out etc
         self.logging.info("Moving /etc to /usr/etc.")
