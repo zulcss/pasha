@@ -45,7 +45,10 @@ class Bootstrap(ModuleBase):
         # Extend mmdebstrap configuration options, see manpage for details.
         packages = self.stage.get("packages")
         if packages:
-            cmd.extend([f"--include={', '.join(packages)}"])
+            for sub_packages in packages:
+                self.logging.debug(f"sub packages: {sub_packages}")
+                for package in sub_packages.split():
+                    cmd.extend([f"--include={package}"])
         repo = None
         mirrors = self.stage.get("mirrors")
         if mirrors:
