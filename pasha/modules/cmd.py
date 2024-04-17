@@ -22,6 +22,7 @@ class Command(ModuleBase):
 
     def run(self):
         for cmd in self.stage.commands:
+            self.logging.info(f"Running {cmd}")
             utils.run_chroot_command(shlex.split(cmd), self.rootfs)
 
     def validate(self):

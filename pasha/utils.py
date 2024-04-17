@@ -53,7 +53,7 @@ def run_command(args, check=True, **kwargs):
 
 
 def run_chroot_command(args, rootfs, efi=None, boot=None, **kwargs):
-    """Run bubblewarap in a seperate namespace."""
+    """Run bubblewarap in a new namespace."""
     cmd = [
         "bwrap",
         "--bind",
@@ -92,6 +92,7 @@ def run_chroot_command(args, rootfs, efi=None, boot=None, **kwargs):
 
 
 def fetch(source):
+    """Fetch a file from a specific site."""
     a = urlparse(source)
     path = os.path.basename(a.path)
 

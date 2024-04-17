@@ -13,7 +13,7 @@ from pasha.mount import mount
 
 
 class Unpack(ModuleBase):
-    """Module that uses parted to create parttions."""
+    """Module that uses parted to create partitions."""
 
     def __init__(self, state, config, stage):
         self.state = state
@@ -29,7 +29,7 @@ class Unpack(ModuleBase):
         self.logging.info("Unpacking source.")
 
         if not os.path.exists(self.source):
-            raise Exception(f"Couuld not find {self.source}.")
+            raise Exception(f"Could not find {self.source}.")
 
         if not self.rootfs.exists():
             self.rootfs.mkdir(parents=True, exist_ok=True)

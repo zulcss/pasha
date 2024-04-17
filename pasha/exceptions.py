@@ -18,6 +18,12 @@ class PashaError(Exception):
 
 
 class ConfigError(PashaError):
-    """Pasha cofiguration error."""
+    """Pasha configuration error."""
+
+    pass
+
+
+class CommandError(PashaError):
+    """Pasha command error."""
 
     pass

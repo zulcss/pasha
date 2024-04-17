@@ -9,12 +9,12 @@ import os
 import shlex
 import shutil
 
-from pasha import utils
+from pasha import exceptions, utils
 from pasha.modules.base import ModuleBase
 
 
 class Parted(ModuleBase):
-    """Module that uses parted to create parttions."""
+    """Module that uses parted to create partitions."""
 
     def __init__(self, state, config, stage):
         self.state = state
@@ -28,10 +28,13 @@ class Parted(ModuleBase):
     def run(self):
         self.logging.info("Running parted.")
 
+        if not os.path.exists(self.device):
+            raise exceptions.ConfigError(f"{self.device} does not exist.")
+
         self.logging.info("Creating gpt disk label.")
         utils.run_command(["parted", self.device, "--script", "mklabel", "gpt"])
 
-        self.logging.info("Creating parttiions.")
+        self.logging.info("Creating partitions.")
         for index, part in enumerate(self.slices, start=1):
             self.logging.info(f"Creating partition {index}: {part.name}")
             utils.run_command(
@@ -73,6 +76,8 @@ class Parted(ModuleBase):
 
 
 class Reparted(ModuleBase):
+    """Module that uses systemd-repart to create partitions."""
+
     def __init__(self, state, config, stage):
         self.state = state
         self.config = config
@@ -90,7 +95,7 @@ class Reparted(ModuleBase):
         device = self.config.params.disk
         if device:
             if os.path.exists(device):
-                self.logging.info(f"Found {device} from a previosu run.")
+                self.logging.info(f"Found {device} from a previous run.")
                 os.unlink(device)
             size = self.stage.get("size")
             if size is None:
@@ -122,7 +127,7 @@ class Reparted(ModuleBase):
 
 
 class Filesystem(ModuleBase):
-    """Module that create filesystmes on parttions."""
+    """Module that create filesystems on partitions."""
 
     def __init__(self, state, config, stage):
         self.state = state
@@ -158,13 +163,13 @@ class Filesystem(ModuleBase):
             utils.run_command(["mkfs", "-F", "-t", fs_type, "-L", label, fs])
 
     def _get_partition_device(self, number, device):
-        """Get the parition device."""
+        """Get the partition device."""
         suffix = "p"
         # Check partition naming first: if used 'by-id'i naming convention
         if "/disk/by-id" in device:
             suffix = "-part"
 
-        # If the iamge device has a digit as the last character, the partition
+        # If the image device has a digit as the last character, the partition
         # suffix is p<number> else it's just <number>
         last = device[len(device) - 1]
         if last >= "0" and last <= "9":

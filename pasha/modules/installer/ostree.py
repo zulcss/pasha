@@ -12,7 +12,7 @@ import shlex
 import shutil
 import sys
 
-from pasha import utils
+from pasha import exceptions, utils
 from pasha.modules.base import ModuleBase
 
 
@@ -65,6 +65,9 @@ class OstreePullLocal(ModuleBase):
     def run(self):
         repo = self.rootfs.joinpath("ostree/repo")
         self.logging.info(f"Pulling {self.branch} from {self.repo}")
+        if not repo.exists():
+            raise exeptions.ConfigError(f"{repo} does not exist.")
+
         utils.run_command(
             ["ostree", "pull-local", "--repo", repo, self.repo, self.branch]
         )
@@ -87,6 +90,9 @@ class OstreePullRemote(ModuleBase):
 
     def run(self):
         repo = self.rootfs.joinpath("ostree/repo")
+        if not repo.exists():
+            raise exeptions.ConfigError(f"{repo} does not exist.")
+
         if self.repo.startswith("http"):
             self.logging.info(f"Pulling from {self.repo}")
             utils.run_command(
@@ -164,7 +170,7 @@ class OstreePrep(ModuleBase):
             self.rootfs.joinpath("boot"), self.rootfs.joinpath("usr/lib/ostree-boot")
         )
         self._convert_to_ostree()
-        self.logging.info("Commiting to ostree")
+        self.logging.info("Committing to ostree")
         ostree(
             "commit",
             str(self.rootfs),
@@ -174,6 +180,7 @@ class OstreePrep(ModuleBase):
         )
 
     def _convert_to_ostree(self):
+        """Convert Debian rootfs to ostree."""
         CRUFT = [
             "boot/initrd.img",
             "boot/vmlinuz",
@@ -183,7 +190,7 @@ class OstreePrep(ModuleBase):
             "vmlinuz.old",
         ]
 
-        # Remove unecessary files
+        # Remove unnecessary files
         self.logging.info("Removing unnecessary files.")
         for c in CRUFT:
             try:
@@ -197,8 +204,8 @@ class OstreePrep(ModuleBase):
             self.rootfs.joinpath("var/lib/dpkg"),
             self.rootfs.joinpath("usr/share/dpkg/database"),
         )
-        # shutil.rmtree(self.rootfs.joinpath("var"))
-        # os.mkdir(self.rootfs.joinpath("var"), dir_perm)
+        shutil.rmtree(self.rootfs.joinpath("var"))
+        os.mkdir(self.rootfs.joinpath("var"), 0o775)
 
         # Setup and split out etc
         self.logging.info("Moving /etc to /usr/etc.")

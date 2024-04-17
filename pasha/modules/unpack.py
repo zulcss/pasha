@@ -23,7 +23,7 @@ class Unpack(ModuleBase):
 
         self.logging = logging.getLogger(__name__)
 
-        # supported compression tevels
+        # supported compression levels
         self.compression = {
             "tgz": "-zxf",
             "squashfs": "squashfs",
@@ -49,7 +49,7 @@ class Unpack(ModuleBase):
                 if os.path.exists(source):
                     self._unpack(source, self.rootfs, compression)
                 else:
-                    raise Exception(f"Couldnt find {source}.")
+                    raise Exception(f"Could not find {source}.")
 
             if mount_flag:
                 umount(self.rootfs)
@@ -62,7 +62,7 @@ class Unpack(ModuleBase):
 
     def _unpack(self, source, rootfs, compression):
         if compression == "tgz":
-            self.logging.info("Unpackging tarball.")
+            self.logging.info("Unpacking tarball.")
             unpack(source, self.rootfs)
 
         if compression == "squashfs":

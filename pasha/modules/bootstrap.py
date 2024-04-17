@@ -34,7 +34,7 @@ class Bootstrap(ModuleBase):
 
         suite = self.stage.get("suite")
         if suite is None:
-            raise exceptions.ConfigErrror("suite is not found.")
+            raise exceptions.ConfigError("suite is not found.")
             if suite not in ["bookworm", "trixie", "testing", "sid"]:
                 raise exceptions.ConfigError(f"{suite} is not a supported  suite.")
 

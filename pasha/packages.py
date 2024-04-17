@@ -19,14 +19,14 @@ class Apt(object):
         self.rootfs = self.state.workspace.joinpath(f"{self.config.name}/rootfs")
 
         self.env = {
-            "DEBIAN_FRONTEND": "nonineractive",
-            "DEBAIN_INTERACTIVE_SEEN": "True",
+            "DEBIAN_FRONTEND": "noninteractive",
+            "DEBIAN_INTERACTIVE_SEEN": "True",
         }
 
     def clean(self):
         """Clean apt package cache."""
         self.loging.info("Running apt clean.")
-        utils.run_chroot_commnad(["apt", "clean"], self.rootfs, env=self.env)
+        utils.run_chroot_commnand(["apt", "clean"], self.rootfs, env=self.env)
 
     def install(self, packages):
         """Run apt package install."""
@@ -48,9 +48,9 @@ class Apt(object):
         utils.run_chroot_command(["apt", "update"], self.rootfs, env=self.env)
 
     def upgrade(self):
-        """Run apt ugrade."""
-        self.loging.info("Running apt upgrade.")
-        utils.run_chroot_command(["apt", "upgradae", "-y"], self.rootfs, env=self.env)
+        """Run apt upgrade."""
+        self.logging.info("Running apt upgrade.")
+        utils.run_chroot_command(["apt", "upgrade", "-y"], self.rootfs, env=self.env)
 
     def dist_upgrade(self):
         """Run apt dist-upgrade."""
