@@ -141,12 +141,21 @@ class Filesystem(ModuleBase):
 
         device = self.config.params.disk
         if device:
+            cmd = f"partprobe {device}"
+            utils.run_command(cmd, shell=True)
+
+            cmd = "udevadm settle"
+            utils.run_command(cmd, shell=True)
+
             filesystems = self.stage.get("filesystems")
             if filesystems:
                 for index, part in enumerate(filesystems, start=1):
                     fs = self._get_partition_device(index, device)
                     if os.path.exists(fs):
                         self._mkfs(fs, part.fs, part.label, part.name)
+                    else:
+                        self.logging.error(f"{fs} not found")
+                        sys.exit(1)
         else:
             raise Exception("Disk image is not specified.")
 
