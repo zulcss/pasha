@@ -6,6 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 """
 
 import logging
+import os
 
 from pasha import utils
 
@@ -18,43 +19,61 @@ class Apt(object):
         self.logging = logging.getLogger(__name__)
         self.rootfs = self.state.workspace.joinpath(f"{self.config.name}/rootfs")
 
-        self.env = {
-            "DEBIAN_FRONTEND": "noninteractive",
-            "DEBIAN_INTERACTIVE_SEEN": "True",
-        }
-
     def clean(self):
-        """Clean apt package cache."""
-        self.loging.info("Running apt clean.")
-        utils.run_chroot_commnand(["apt", "clean"], self.rootfs, env=self.env)
+        """Clean apt-get package cache."""
+        self.logging.info("Running apt-get clean.")
+        ret, _ = utils.run_chroot_command(["apt-get", "clean"], self.rootfs)
+        if ret != 0:
+            raise Exception(f"Failed to run apt-get clean.")
 
     def install(self, packages):
-        """Run apt package install."""
-        self.logging.info("Running apt install.")
-        utils.run_chroot_command(
-            ["apt", "install", "-y"] + packages, self.rootfs, env=self.env
-        )
+        """Run apt-get package install."""
+        self.logging.info("Running apt-get install.")
+        env = os.environ.copy()
+        env["DEBIAN_FRONTEND"] = "noninteractive"
+
+        for package in packages:
+            self.logging.info(f"Installing {package}.")
+            ret, output = utils.run_chroot_command(
+                ["apt-get", "install", "-y", package], self.rootfs, env=env
+            )
+            if ret != 0:
+                raise Exception(f"Failed to apt-get install {package}: {output}")
 
     def remove(self, packages):
-        """Run apt package remove."""
+        """Remove a package"""
         self.logging.info("Removing packages.")
-        utils.run_chroot_command(
-            ["apt", "remove", "-y"] + packages, self.rootfs, env=self.env
-        )
+        env = os.environ.copy()
+        env["DEBIAN_FRONTEND"] = "noninteractive"
+        for package in packages:
+            self.logging.info(f"Removing {package}.")
+            ret, output = utils.run_chroot_command(
+                ["apt-get", "remove", "-y", packages], self.rootfs, env=env
+            )
+            if ret != 0:
+                raise Exception(f"Failed to apt-get remove {package}: {output}")
 
     def refresh(self):
         """Run apt-get update."""
-        self.logging.info("Running apt update.")
-        utils.run_chroot_command(["apt", "update"], self.rootfs, env=self.env)
+        self.logging.info("Running apt-get update.")
+        ret, output = utils.run_chroot_command(["apt-get", "update"], self.rootfs)
+        if ret != 0:
+            raise Exception(f"Failed to run apt-get update {package}: {output}")
 
     def upgrade(self):
-        """Run apt upgrade."""
-        self.logging.info("Running apt upgrade.")
-        utils.run_chroot_command(["apt", "upgrade", "-y"], self.rootfs, env=self.env)
+        """Run apt-get upgrade."""
+        self.logging.info("Running apt-get upgrade.")
+        ret, output = utils.run_chroot_command(
+            ["apt-get", "upgrade", "-y"], self.rootfs
+        )
+        if ret != 0:
+            raise Exception(f"Failed to run apt-get upgrade: {output}")
 
     def dist_upgrade(self):
-        """Run apt dist-upgrade."""
+        """Run apt-get dist-upgrade."""
         self.logging.info("Running apt full-upgrade.")
-        utils.run_chroot_command(
-            ["apt", "full-upgrade", "-y"], self.rootfs, env=self.env
+        ret, output = utils.run_chroot_command(
+            ["apt-get", "dist-upgrade", "-y"], self.rootfs
         )
+        if ret != 0:
+            raise Exception(f"Failed to run apt-get dist-upgrade: {output}")

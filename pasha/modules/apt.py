@@ -18,6 +18,8 @@ class AptBase(ModuleBase):
         self.logging = logging.getLogger(__name__)
         self.apt = Apt(self.state, self.config)
 
+        self.rootfs = self.state.workspace.joinpath(f"{self.config.name}/rootfs")
+
     def run(self):
         pass
 
@@ -27,6 +29,10 @@ class AptBase(ModuleBase):
 
 class AptClean(AptBase):
     def run(self):
+        self.logging.info("Cleaning package database.")
+        if not self.rootfs.exists():
+            raise Exception("Unable to find rootfs.")
+
         self.apt.clean()
 
     def validate(self):
@@ -35,6 +41,10 @@ class AptClean(AptBase):
 
 class AptRemove(AptBase):
     def run(self):
+        self.logging.info("Removing packages.")
+        if not self.rootfs.exists():
+            raise Exception("Unable to find rootfs.")
+
         self.apt.remove(self.stage.packages)
 
     def validate(self):
@@ -43,6 +53,9 @@ class AptRemove(AptBase):
 
 class AptUpdate(AptBase):
     def run(self):
+        self.logging.info("Updating package database")
+        if not self.rootfs.exists():
+            raise Exception("Unable to find rootfs.")
         self.apt.refresh()
 
     def validate(self):
@@ -51,6 +64,9 @@ class AptUpdate(AptBase):
 
 class AptUpgrade(AptBase):
     def run(self):
+        self.logging.info("Upgrading installed packages.")
+        if not self.rootfs.exists():
+            raise Exception("Unable to find rootfs.")
         self.apt.upgrade()
 
     def validate(self):
@@ -59,6 +75,9 @@ class AptUpgrade(AptBase):
 
 class AptDistUpgrade(AptBase):
     def run(self):
+        self.logging.info("Running apt-get dist-upgrade.")
+        if not self.rootfs.exists():
+            raise Exception("Unable to find rootfs.")
         self.apt.dist_upgrade()
 
     def validate(self):
@@ -67,6 +86,9 @@ class AptDistUpgrade(AptBase):
 
 class AptInstall(AptBase):
     def run(self):
+        self.logging.info("Installing packages.")
+        if not self.rootfs.exists():
+            raise Exception("Unable to find rootfs.")
         self.apt.install(self.stage.packages)
 
     def validate(self):
