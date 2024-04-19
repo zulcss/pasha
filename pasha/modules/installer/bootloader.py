@@ -50,21 +50,24 @@ class Bootloader(ModuleBase):
                 )
         elif self.uefi == "grub-efi":
             cmd = ["cp", "-rf", "/usr/lib/ostree-grub/grub", "/boot"]
-            utils.run_chroot_command(cmd,
+            utils.run_chroot_command(
+                cmd,
                 self.rootfs,
                 efi=self.rootfs,
                 boot=self.rootfs,
             )
 
             cmd = ["rm", "-rf", "/efi/EFI/BOOT"]
-            utils.run_chroot_command(cmd,
+            utils.run_chroot_command(
+                cmd,
                 self.rootfs,
                 efi=self.rootfs,
                 boot=self.rootfs,
             )
 
             cmd = ["cp", "-rf", "/usr/lib/ostree-grub/EFI", "/efi"]
-            utils.run_chroot_command(cmd,
+            utils.run_chroot_command(
+                cmd,
                 self.rootfs,
                 efi=self.rootfs,
                 boot=self.rootfs,
@@ -137,21 +140,24 @@ class BootloaderOstree(ModuleBase):
                 )
         elif self.uefi == "grub-efi":
             cmd = ["cp", "-rf", "/usr/lib/ostree-grub/grub", "/boot"]
-            utils.run_chroot_command(cmd,
+            utils.run_chroot_command(
+                cmd,
                 repo_root,
                 efi=self.rootfs,
                 boot=self.rootfs,
             )
 
             cmd = ["rm", "-rf", "/efi/EFI/BOOT"]
-            utils.run_chroot_command(cmd,
+            utils.run_chroot_command(
+                cmd,
                 repo_root,
                 efi=self.rootfs,
                 boot=self.rootfs,
             )
 
             cmd = ["cp", "-rf", "/usr/lib/ostree-grub/EFI", "/efi"]
-            utils.run_chroot_command(cmd,
+            utils.run_chroot_command(
+                cmd,
                 repo_root,
                 efi=self.rootfs,
                 boot=self.rootfs,
