@@ -15,7 +15,7 @@ def mount(image, rootfs):
         output,
     ) = utils.run_command(["systemd-dissect", "-m", image, rootfs])
     if ret != 0:
-        exceptions.CommandError(f"Failed to mount {image} on {rootfs}: {output}")
+        raise exceptions.CommandError(f"Failed to mount {image} on {rootfs}: {output}")
     return ret
 
 
@@ -23,5 +23,5 @@ def umount(rootfs):
     """Umount an image via systemd-dissect."""
     ret, output = utils.run_command(["systemd-dissect", "-u", rootfs])
     if ret != 0:
-        exceptions.CommandError(f"Failed to umount {rootfs}: {output}")
+        raise exceptions.CommandError(f"Failed to umount {rootfs}: {output}")
     return ret
