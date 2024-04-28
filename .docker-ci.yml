@@ -9,13 +9,13 @@ variables:
   CERTIFICATE_IDENTITY: 'https://gitlab.com/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME//.gitlab-ci.yml@refs/heads/$CI_COMMIT_REF_SLUG'
   SECURE_LOG_LEVEL: 'debug'
 
-'Docker Lint':
+lint docker:
   stage: lint
   image: ghcr.io/hadolint/hadolint:latest-debian
   script:
     - hadolint docker/Dockerfile
 
-'Docker Build':
+build docker:
   # Use the official docker image.
   image: docker:cli
   stage: build
@@ -54,7 +54,7 @@ variables:
     SIGSTORE_ID_TOKEN:
       aud: sigstore
 
-'Publish Tagged Container':
+sign docker:
   stage: publish
   <<: *docker_setup
   script:
@@ -66,9 +66,9 @@ variables:
   only:
     - master
 
-'Verify Tagged Container Image':
+verify docker:
   stage: publish
-  needs: ["Publish Tagged Container"]
+  needs: ["sign docker"]
   <<: *docker_setup
   script:
     - cosign verify "$CONTAINER_RELEASE_IMAGE" --certificate-identity "$CERTIFICATE_IDENTITY" --certificate-oidc-issuer "https://gitlab.com"

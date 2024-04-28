@@ -16,7 +16,7 @@ variables:
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
   PBR_VERSION: 0.0.1
 
-'Python Lint':
+lint python:
   <<: *python_setup
   needs: []
   stage: lint
@@ -25,17 +25,17 @@ variables:
     - black --check . --exclude=venv
     - pycodestyle . --config .pycodestyle --exclude venv
 
-'Python Build':
+build python:
   <<: *python_setup
-  needs: ['Python Lint']
+  needs: ['lint python']
   stage: build
   script:
     - pip3 install build
     - python -m build
 
-'Python Test':
+test python:
   <<: *python_setup
-  needs: ['Python Lint']
+  needs: ['lint python']
   stage: test
   script:
     - tox -e py3

@@ -1,5 +1,5 @@
 ---
-'YAML Lint':
+lint yaml:
   stage: lint
   image:
     name: cytopia/yamllint
@@ -7,7 +7,7 @@
   script:
     - yamllint -f colored $(find . -name '*.yml')
 
-'RST Lint':
+lint rst:
   stage: lint
   image:
     name: python:latest
