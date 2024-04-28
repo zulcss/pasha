@@ -28,7 +28,7 @@ variables:
     SIGSTORE_ID_TOKEN:  # Used by Cosign to get certificate from Fulcio
       aud: sigstore
   before_script:
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
     - cd docker
   script:
     - docker build --pull -t "$DOCKER_IMAGE_NAME" .
@@ -49,7 +49,7 @@ variables:
     - docker:dind
   before_script:
     - apk add --update cosign
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
   id_tokens:
     SIGSTORE_ID_TOKEN:
       aud: sigstore
