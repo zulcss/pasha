@@ -9,12 +9,6 @@ variables:
   CERTIFICATE_IDENTITY: 'https://gitlab.com/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME//.gitlab-ci.yml@refs/heads/$CI_COMMIT_REF_SLUG'
   SECURE_LOG_LEVEL: 'debug'
 
-stages:
-  - lint
-  - build
-  - test
-  - publish
-
 'Docker Lint':
   stage: lint
   image: ghcr.io/hadolint/hadolint:latest-debian

@@ -1,10 +1,23 @@
 include:
+ - template: Jobs/Secret-Detection.gitlab-ci.yml
+ - template: SAST.gitlab-ci.yml
  - https://gitlab.com/wr-linux/ci/pipeline/raw/wr/salsa-ci.yml
  - https://gitlab.com/wr-linux/ci/pipeline/raw/wr/pipeline-jobs.yml
-  
+ # Disable until if/when a dockerfile is added to the project
+ #- local: .docker-ci.yml
+ - local: .python-ci.yml
+ - local: .misc-lint.yml
+
 variables:
  RELEASE: 'bookworm'
  SALSA_CI_DISABLE_VERSION_BUMP: 1
  SALSA_CI_DISABLE_BUILD_PACKAGE_ARM64: 0
  SALSA_CI_DISABLE_BLHC: 1
  SALSA_CI_DISABLE_REPROTEST: 1
+
+stages:
+ - provisioning
+ - lint
+ - build
+ - publish
+ - test
