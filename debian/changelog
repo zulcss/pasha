@@ -1,4 +1,10 @@
-pasha (0.1) UNRELEASED; urgency=medium
+pasha (0.1.1) bookworm; urgency=medium
+
+  * Make ostree support devicetree directory
+
+ -- Hongxu Jia <hongxu.jia@windriver.com>  Tue, 30 Apr 2024 09:57:49 -0400
+
+pasha (0.1) bookworm; urgency=medium
 
   * Initial release.
 

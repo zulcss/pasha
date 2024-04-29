@@ -176,7 +176,7 @@ class OstreePrep(ModuleBase):
 
     def run(self):
         self._setup_boot(
-            self.rootfs.joinpath("boot"), self.rootfs.joinpath("usr/lib/ostree-boot")
+            self.rootfs.joinpath("boot"), self.rootfs.joinpath("usr/lib/modules")
         )
         self._convert_to_ostree()
         self.logging.info("Committing to ostree")
@@ -256,6 +256,11 @@ class OstreePrep(ModuleBase):
         dtbs = None
         version = None
 
+        for item in os.listdir(bootdir):
+            if item.startswith("vmlinuz"):
+                _, version = item.split("-", 1)
+
+        targetdir = os.path.join(targetdir, version)
         try:
             os.mkdir(targetdir)
         except OSError:
@@ -277,24 +282,15 @@ class OstreePrep(ModuleBase):
                 shutil.move(os.path.join(bootdir, item), targetdir)
         assert vmlinuz is not None
 
-        m = hashlib.sha256()
-        m.update(open(os.path.join(bootdir, vmlinuz), mode="rb").read())
-        if initrd is not None:
-            m.update(open(os.path.join(bootdir, initrd), "rb").read())
-
-        csum = m.hexdigest()
-
         os.rename(
             os.path.join(bootdir, vmlinuz),
-            os.path.join(targetdir, vmlinuz + "-" + csum),
+            os.path.join(targetdir, "vmlinuz"),
         )
 
         if initrd is not None:
             os.rename(
                 os.path.join(bootdir, initrd),
-                os.path.join(
-                    targetdir, initrd.replace("initrd.img", "initramfs") + "-" + csum
-                ),
+                os.path.join(targetdir, "initramfs.img"),
             )
 
     def validate(self):
