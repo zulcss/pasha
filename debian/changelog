@@ -1,3 +1,9 @@
+pasha (0.1.2) bookworm; urgency=medium
+
+  * pasha/modules/installer/disk.py: import sys
+
+ -- Hongxu Jia <hongxu.jia@windriver.com>  Mon, 06 May 2024 05:43:28 -0400
+
 pasha (0.1.1) bookworm; urgency=medium
 
   * Make ostree support devicetree directory

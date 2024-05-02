@@ -8,6 +8,7 @@ import logging
 import os
 import shlex
 import shutil
+import sys
 
 from pasha import exceptions, utils
 from pasha.modules.base import ModuleBase
