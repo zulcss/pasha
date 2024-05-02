@@ -1,8 +1,4 @@
 ---
-cache:
-  paths:
-    - .cache/pip
-
 .python_setup: &python_setup
   image: debian:bookworm-slim
   before_script:
@@ -13,7 +9,6 @@ cache:
     - pip3 install -r requirements.txt -r ci-requirements.txt
 
 variables:
-  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
   PBR_VERSION: 0.0.1
 
 lint python:
