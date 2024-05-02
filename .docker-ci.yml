@@ -1,12 +1,9 @@
 ---
 variables:
-  # Use TLS https://docs.gitlab.com/ee/ci/docker/using_docker_build.html#tls-enabled
-  DOCKER_HOST: tcp://docker:2376
-  DOCKER_TLS_CERTDIR: '/certs'
   CONTAINER_TEST_IMAGE: ruck:$CI_COMMIT_REF_SLUG
   CONTAINER_RELEASE_IMAGE: ruck:latest
   COSIGN_YES: 'true'
-  CERTIFICATE_IDENTITY: 'https://gitlab.com/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME//.gitlab-ci.yml@refs/heads/$CI_COMMIT_REF_SLUG'
+  CERTIFICATE_IDENTITY: 'https://gitlab.com/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME//debian/salsa-ci.yml@refs/heads/$CI_COMMIT_REF_SLUG'
   SECURE_LOG_LEVEL: 'debug'
 
 lint docker:
@@ -22,6 +19,8 @@ build docker:
   services:
     - docker:dind
   variables:
+    DOCKER_HOST: tcp://docker:2376
+    DOCKER_TLS_CERTDIR: '/certs'
     DOCKER_IMAGE_NAME: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
     COSIGN_YES: "true"
   id_tokens:
