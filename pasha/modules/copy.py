@@ -5,6 +5,7 @@ SPDX-License-Identifier: Apache-2.0
 """
 
 import logging
+import os.path
 
 from pasha import utils
 from pasha.modules.base import ModuleBase
@@ -20,8 +21,13 @@ class Copy(ModuleBase):
 
     def run(self):
         source = self.stage.get("source")
-        cmd = ["cp", "-a", source, self.rootfs]
-        utils.run_chroot_command(cmd, self.rootfs)
+        dest = self.stage.get("dest")
+        if dest:
+            dest = os.path.join(self.rootfs, dest)
+        else:
+            dest = self.rootfs
+        cmd = ["cp", "-rfL", source, dest]
+        utils.run_command(cmd)
 
     def validate(self):
         pass
