@@ -56,6 +56,9 @@ class Bootstrap(ModuleBase):
             with open(repo, "w") as f:
                 for mirror in mirrors:
                     f.write(f"{mirror}\n")
+                    if mirror.startswith("deb "):
+                        src_mirror = "# deb-src " + mirror.removeprefix("deb ")
+                        f.write(f"{src_mirror}\n")
         customize_hooks = self.stage.get("customize_hooks")
         if customize_hooks:
             cmd.extend([f"--customize-hook={hook}" for hook in customize_hooks])
