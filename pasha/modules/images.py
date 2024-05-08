@@ -33,7 +33,7 @@ class RawImage(ModuleBase):
         if ret != 0:
             raise Exception(f"Failed to create {self.image}.")
         self.logging.info(f"Attaching {self.image} to {self.disk}")
-        cmd = ["losetup", self.disk, self.image]
+        cmd = ["losetup", "--partscan", self.disk, self.image]
         ret, _ = utils.run_command(cmd)
         if ret != 0:
             raise Exception(f"Failed to attach {self.image} to {self.disk}.")
