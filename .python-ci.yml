@@ -2,7 +2,7 @@
 .python_setup: &python_setup
   image: debian:bookworm-slim
   before_script:
-    - apt-get update && apt-get -y install python3 git python3-virtualenv
+    - apt-get update && apt-get -y install python3 git python3-virtualenv mmdebstrap
     - python3 -V
     - virtualenv venv
     - source venv/bin/activate

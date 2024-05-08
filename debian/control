@@ -11,6 +11,8 @@ Build-Depends:
  python3-stevedore,
  python3-yaml,
  python3-oslotest,
+ python3-omegaconf,
+ mmdebstrap,
 Standards-Version: 4.7.0
 Homepage: https://gitlab.com/wr-linux/tools/pasha
 

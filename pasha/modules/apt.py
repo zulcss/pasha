@@ -44,8 +44,10 @@ class AptRemove(AptBase):
         self.logging.info("Removing packages.")
         if not self.rootfs.exists():
             raise Exception("Unable to find rootfs.")
-
-        self.apt.remove(self.stage.packages)
+        packages = self.stage.get("packages")
+        if packages is None:
+            raise Exception(f"Unable to remove {packages}")
+        self.apt.remove(packages)
 
     def validate(self):
         pass
@@ -67,6 +69,7 @@ class AptUpgrade(AptBase):
         self.logging.info("Upgrading installed packages.")
         if not self.rootfs.exists():
             raise Exception("Unable to find rootfs.")
+
         self.apt.upgrade()
 
     def validate(self):
@@ -89,6 +92,10 @@ class AptInstall(AptBase):
         self.logging.info("Installing packages.")
         if not self.rootfs.exists():
             raise Exception("Unable to find rootfs.")
+
+        packages = self.stage.get("packages")
+        if packages is None:
+            raise Exception("No package specified.")
         self.apt.install(self.stage.packages)
 
     def validate(self):

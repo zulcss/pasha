@@ -1,9 +1,11 @@
-pasha (0.1.4) UNRELEASED; urgency=medium
+pasha (0.1.3) UNRELEASED; urgency=medium
 
+  [Chuck Short]
+  * debian/control: Add python3-omegaconf to build depends. 
+  * debian/control: Add mmdebstrap to build depends.
+
+  [Hongxu Jia]
   * New upstream release
-  * support to compress raw image
-  * ssha/modules/images.py: add --partscan to losetup
-  * pasha/modules/bootstrap.py: add deb-src to apt source list
 
  -- Hongxu Jia <hongxu.jia@windriver.com>  Thu, 09 May 2024 06:28:42 -0400
 

@@ -48,7 +48,7 @@ class Apt(object):
         for package in packages:
             self.logging.info(f"Removing {package}.")
             ret, output = utils.run_chroot_command(
-                ["apt-get", "remove", "-y", packages], self.rootfs, env=env
+                ["apt-get", "remove", "-y", package], self.rootfs, env=env
             )
             if ret != 0:
                 raise Exception(f"Failed to apt-get remove {package}: {output}")
@@ -63,8 +63,10 @@ class Apt(object):
     def upgrade(self):
         """Run apt-get upgrade."""
         self.logging.info("Running apt-get upgrade.")
+        env = os.environ.copy()
+        env["DEBIAN_FRONTEND"] = "noninteractive"
         ret, output = utils.run_chroot_command(
-            ["apt-get", "upgrade", "-y"], self.rootfs
+            ["apt-get", "upgrade", "-y"], self.rootfs, env=env
         )
         if ret != 0:
             raise Exception(f"Failed to run apt-get upgrade: {output}")
@@ -72,8 +74,10 @@ class Apt(object):
     def dist_upgrade(self):
         """Run apt-get dist-upgrade."""
         self.logging.info("Running apt full-upgrade.")
+        env = os.environ.copy()
+        env["DEBIAN_FRONTEND"] = "noninteractive"
         ret, output = utils.run_chroot_command(
-            ["apt-get", "dist-upgrade", "-y"], self.rootfs
+            ["apt-get", "dist-upgrade", "-y"], self.rootfs, env=env
         )
         if ret != 0:
             raise Exception(f"Failed to run apt-get dist-upgrade: {output}")
