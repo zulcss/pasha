@@ -48,7 +48,7 @@ class Undeploy(ModuleBase):
     def run(self):
         self.logging.info("Running undeploy.")
         device = self.config.params.disk
-        self.logging.info(f"UnMounting {device}.")
+        self.logging.info(f"Unmounting {device}.")
         umount(self.rootfs)
 
     def validate(self):

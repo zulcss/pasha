@@ -91,7 +91,7 @@ class OstreePullRemote(ModuleBase):
     def run(self):
         repo = self.rootfs.joinpath("ostree/repo")
         if not repo.exists():
-            raise exeptions.ConfigError(f"{repo} does not exist.")
+            raise exceptions.ConfigError(f"{repo} does not exist.")
 
         if self.repo.startswith("http"):
             self.logging.info(f"Pulling from {self.repo}")
@@ -110,7 +110,7 @@ class OstreePullRemote(ModuleBase):
                 ["ostree", "pull", "--repo={0}".format(repo), "pablo-edge", self.branch]
             )
 
-    def validate(seflf):
+    def validate(self):
         pass
 
 

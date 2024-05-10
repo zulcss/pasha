@@ -26,6 +26,7 @@ class Copy(ModuleBase):
             dest = os.path.join(self.rootfs, dest)
         else:
             dest = self.rootfs
+
         cmd = ["cp", "-rfL", source, dest]
         utils.run_command(cmd)
 

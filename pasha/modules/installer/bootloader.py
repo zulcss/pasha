@@ -104,7 +104,7 @@ class BootloaderOstree(ModuleBase):
         self.rootfs = self.state.workspace.joinpath(f"{self.config.name}/rootfs")
 
     def run(self):
-        self.logging.info("Installing boot loader for ostree.")
+        self.logging.info("Installing boot loader for OSTree.")
 
         for d in self.rootfs.glob("ostree/deploy/debian/deploy/*.0"):
             repo_root = d

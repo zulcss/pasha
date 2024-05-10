@@ -58,7 +58,7 @@ class Apt(object):
         self.logging.info("Running apt-get update.")
         ret, output = utils.run_chroot_command(["apt-get", "update"], self.rootfs)
         if ret != 0:
-            raise Exception(f"Failed to run apt-get update {package}: {output}")
+            raise Exception(f"Failed to run apt-get update: {output}")
 
     def upgrade(self):
         """Run apt-get upgrade."""
