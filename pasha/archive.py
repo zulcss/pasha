@@ -23,7 +23,7 @@ def unpack(archive, rootfs):
         raise exceptions.CommandError(f"Failed to unpack {archive}: {output}")
 
 
-def compress(archive, compressor="xz"):
+def compress(archive, compressor="zstd"):
     log.info(f"Compress {archive}.")
 
     if not os.path.exists(archive):
@@ -35,6 +35,8 @@ def compress(archive, compressor="xz"):
         cmd = f"xz -9 -T{ncpu} -f --keep {archive}"
     elif compressor == "gzip":
         cmd = f"gzip -1 --keep -f {archive}"
+    elif compressor == "zstd":
+        cmd = f"zstd -3 --keep -f -T{ncpu} {archive}"
     else:
         log.error(f"{compressor} not supported")
         sys.exit(1)

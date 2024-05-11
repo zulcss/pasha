@@ -52,7 +52,7 @@ class CompressImage(ModuleBase):
 
     def run(self):
         self.image = self.stage.get("name")
-        self.compressor = self.stage.get("compression", "xz")
+        self.compressor = self.stage.get("compression", "zstd")
         self.logging.info(f"Compress {self.image}.")
 
         if not os.path.exists(self.image):
