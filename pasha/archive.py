@@ -5,10 +5,13 @@ SPDX-License-Identifier: Apache-2.0
 
 """
 
+import logging
 import os
 import sys
 
 from pasha import exceptions, utils
+
+log = logging.getLogger(__name__)
 
 
 def unpack(archive, rootfs):
