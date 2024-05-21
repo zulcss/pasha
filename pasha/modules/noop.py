@@ -21,3 +21,6 @@ class Noop(ModuleBase):
 
     def run(self):
         self.logging.info("hello world")
+
+    def validate(self):
+        pass
