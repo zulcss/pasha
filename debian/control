@@ -25,6 +25,7 @@ Depends:
  python3-stevedore,
  python3-yaml,
  bubblewrap,
+ efibootmgr,
  python3-apt,
  python3-rich,
  python3-systemd
