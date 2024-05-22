@@ -20,7 +20,7 @@ class Noop(ModuleBase):
         self.logging = logging.getLogger(__name__)
 
     def run(self):
-        self.logging.info("hello world")
+        self.logging.debug("Nothing to do")
 
     def validate(self):
         pass
