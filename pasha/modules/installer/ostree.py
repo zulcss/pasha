@@ -72,6 +72,9 @@ class OstreePullLocal(ModuleBase):
             ["ostree", "pull-local", "--repo", repo, self.repo, self.branch]
         )
 
+        self.logging.info("Updating summary of ostree repository")
+        utils.run_command(f"ostree summary -u --repo={repo}", shell=True)
+
     def validate(self):
         pass
 
@@ -109,6 +112,9 @@ class OstreePullRemote(ModuleBase):
             utils.run_command(
                 ["ostree", "pull", "--repo={0}".format(repo), "pablo-edge", self.branch]
             )
+
+            self.logging.info("Updating summary of ostree repository")
+            utils.run_command(f"ostree summary -u --repo={repo}", shell=True)
 
     def validate(self):
         pass
@@ -187,6 +193,9 @@ class OstreePrep(ModuleBase):
             branch=self.branch,
             subject="Initial commit",
         )
+
+        self.logging.info("Updating summary of ostree repository")
+        utils.run_command(f"ostree summary -u --repo={self.repo}", shell=True)
 
     def _convert_to_ostree(self):
         """Convert Debian rootfs to ostree."""
