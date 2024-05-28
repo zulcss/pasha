@@ -1,4 +1,4 @@
-pasha (0.1.6) UNRELEASED; urgency=medium
+pasha (0.1.7) unstable; urgency=medium
 
   [Chuck Short]
   * debian/control: Add python3-omegaconf to build depends. 
@@ -6,8 +6,9 @@ pasha (0.1.6) UNRELEASED; urgency=medium
 
   [Hongxu Jia]
   * New upstream release
+  * Erase available old filesystem on disk before creating partition
 
- -- Hongxu Jia <hongxu.jia@windriver.com>  Thu, 09 May 2024 06:28:42 -0400
+ -- Hongxu Jia <hongxu.jia@windriver.com>  Tue, 28 May 2024 09:59:37 -0400
 
 pasha (0.1.2) bookworm; urgency=medium
 

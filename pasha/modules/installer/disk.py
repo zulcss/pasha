@@ -25,12 +25,17 @@ class Parted(ModuleBase):
         self.logging = logging.getLogger(__name__)
         self.device = self.config.params.disk
         self.slices = self.stage.slices
+        self.no_erase = self.stage.get("noerase", None)
 
     def run(self):
         self.logging.info("Running parted.")
 
         if not os.path.exists(self.device):
             raise exceptions.ConfigError(f"{self.device} does not exist.")
+
+        if not self.no_erase:
+            self.logging.info(f"Erase available filesystem on {self.device}.")
+            utils.run_command(["wipefs", "-f", "-a", self.device])
 
         self.logging.info("Creating gpt disk label.")
         utils.run_command(["parted", self.device, "--script", "mklabel", "gpt"])
