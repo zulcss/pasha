@@ -52,7 +52,7 @@ class Bootstrap(ModuleBase):
         repo = None
         mirrors = self.stage.get("mirrors")
         if mirrors:
-            repo = self.state.workspace.joinpath("pablo.list")
+            repo = self.state.workspace.joinpath("elxr.list")
             with open(repo, "w") as f:
                 for mirror in mirrors:
                     f.write(f"{mirror}\n")
