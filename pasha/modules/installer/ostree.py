@@ -105,12 +105,12 @@ class OstreePullRemote(ModuleBase):
                     "--repo={0}".format(repo),
                     "add",
                     "--no-gpg-verify",
-                    "pablo-edge",
+                    "elxr-edge",
                     self.repo,
                 ]
             )
             utils.run_command(
-                ["ostree", "pull", "--repo={0}".format(repo), "pablo-edge", self.branch]
+                ["ostree", "pull", "--repo={0}".format(repo), "elxr-edge", self.branch]
             )
 
             self.logging.info("Updating summary of ostree repository")
@@ -137,7 +137,7 @@ class OstreeDeploy(ModuleBase):
         self.logging.info(f"Configuring {self.device} for ostree.")
         utils.run_command(["ostree", "admin", "init-fs", self.rootfs])
         utils.run_command(
-            ["ostree", "admin", "os-init", "--sysroot", self.rootfs, "debian"]
+            ["ostree", "admin", "os-init", "--sysroot", self.rootfs, "elxr"]
         )
 
         self.logging.info(f"Deploying {self.branch}")
@@ -148,7 +148,7 @@ class OstreeDeploy(ModuleBase):
             "--sysroot",
             self.rootfs,
             "--os",
-            "debian",
+            "elxr",
             self.branch,
         ]
         for arg in self.kernel_args:
@@ -156,9 +156,9 @@ class OstreeDeploy(ModuleBase):
         utils.run_command(ostree_deploy)
 
         self.logging.info("Restoring /var")
-        for d in self.rootfs.glob("ostree/deploy/debian/deploy/*.0"):
+        for d in self.rootfs.glob("ostree/deploy/elxr/deploy/*.0"):
             repo_root = d
-        var_to = self.rootfs.joinpath("ostree/deploy/debian")
+        var_to = self.rootfs.joinpath("ostree/deploy/elxr")
         var_from = os.path.join(repo_root, "usr/rootdirs/var")
         self.logging.debug(f"Copying {var_from} -> {var_to}")
         cmd = f"cp -af {var_from} {var_to}"
