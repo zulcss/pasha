@@ -106,7 +106,7 @@ class BootloaderOstree(ModuleBase):
     def run(self):
         self.logging.info("Installing boot loader for OSTree.")
 
-        for d in self.rootfs.glob("ostree/deploy/debian/deploy/*.0"):
+        for d in self.rootfs.glob("ostree/deploy/elxr/deploy/*.0"):
             repo_root = d
         utils.run_chroot_command(
             [
