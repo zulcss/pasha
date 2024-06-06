@@ -1,3 +1,10 @@
+pasha (0.1.8) unstable; urgency=medium
+
+  * New usptream release:
+    - 5e632539 - Transition from Pablo to elxr.
+
+ -- Chuck Short <zulcss@gmail.com>  Thu, 06 Jun 2024 14:58:36 +0000
+
 pasha (0.1.7) unstable; urgency=medium
 
   [Chuck Short]
