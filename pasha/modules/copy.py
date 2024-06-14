@@ -29,6 +29,3 @@ class Copy(ModuleBase):
 
         cmd = ["cp", "-rfL", source, dest]
         utils.run_command(cmd)
-
-    def validate(self):
-        pass

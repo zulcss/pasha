@@ -57,9 +57,6 @@ class Unpack(ModuleBase):
         else:
             raise Exception("Unable to determine tarball sources.")
 
-    def validate(self):
-        pass
-
     def _unpack(self, source, rootfs, compression):
         if compression == "tgz":
             self.logging.info("Unpacking tarball.")

@@ -35,6 +35,3 @@ class User(ModuleBase):
             cmd += ["--shell", "/bin/bash"]
 
             utils.run_chroot_command(["useradd", *cmd, username], self.rootfs)
-
-    def validate(self):
-        pass

@@ -44,6 +44,3 @@ class BootOrder(ModuleBase):
         # Add new boot entry to the top
         cmd = rf'efibootmgr -c -w -L "{name}" -d "{device}" -l "\EFI\BOOT\bootx64.efi"'
         utils.run_command(cmd, shell=True)
-
-    def validate(self):
-        pass

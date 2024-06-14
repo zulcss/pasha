@@ -49,6 +49,3 @@ class Unpack(ModuleBase):
                 "--numeric-owner",
             ]
         )
-
-    def validate(self):
-        pass

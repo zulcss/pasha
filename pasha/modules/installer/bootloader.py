@@ -88,9 +88,6 @@ class Bootloader(ModuleBase):
             boot=self.rootfs,
         )
 
-    def validate(self):
-        pass
-
 
 class BootloaderOstree(ModuleBase):
     def __init__(self, state, config, stage):
@@ -162,6 +159,3 @@ class BootloaderOstree(ModuleBase):
                 efi=self.rootfs,
                 boot=self.rootfs,
             )
-
-    def validate(self):
-        pass

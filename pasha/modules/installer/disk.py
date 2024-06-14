@@ -77,9 +77,6 @@ class Parted(ModuleBase):
                 cmd = f"sfdisk --part-type {self.device} {index} {part.id}"
                 utils.run_command(shlex.split(cmd))
 
-    def validate(self):
-        pass
-
 
 class Reparted(ModuleBase):
     """Module that uses systemd-repart to create partitions."""
@@ -128,9 +125,6 @@ class Reparted(ModuleBase):
         else:
             raise Exception("Disk image is not specified.")
 
-    def validate(self):
-        pass
-
 
 class Filesystem(ModuleBase):
     """Module that create filesystems on partitions."""
@@ -164,9 +158,6 @@ class Filesystem(ModuleBase):
                         sys.exit(1)
         else:
             raise Exception("Disk image is not specified.")
-
-    def validate(self):
-        pass
 
     def _mkfs(self, fs, fs_type, label, name):
         self.logging.info(f"Formatting filesystems for {name}.")
