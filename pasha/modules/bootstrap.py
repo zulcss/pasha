@@ -101,6 +101,3 @@ class Bootstrap(ModuleBase):
             # include our mirror from the manifest.
             cmd.extend([repo])
         utils.run_command(cmd)
-
-    def validate(self):
-        pass

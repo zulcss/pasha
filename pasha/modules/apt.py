@@ -23,9 +23,6 @@ class AptBase(ModuleBase):
     def run(self):
         pass
 
-    def validate(self):
-        pass
-
 
 class AptClean(AptBase):
     def run(self):
@@ -34,9 +31,6 @@ class AptClean(AptBase):
             raise Exception("Unable to find rootfs.")
 
         self.apt.clean()
-
-    def validate(self):
-        pass
 
 
 class AptRemove(AptBase):
@@ -49,9 +43,6 @@ class AptRemove(AptBase):
             raise Exception(f"Unable to remove {packages}")
         self.apt.remove(packages)
 
-    def validate(self):
-        pass
-
 
 class AptUpdate(AptBase):
     def run(self):
@@ -59,9 +50,6 @@ class AptUpdate(AptBase):
         if not self.rootfs.exists():
             raise Exception("Unable to find rootfs.")
         self.apt.refresh()
-
-    def validate(self):
-        pass
 
 
 class AptUpgrade(AptBase):
@@ -72,9 +60,6 @@ class AptUpgrade(AptBase):
 
         self.apt.upgrade()
 
-    def validate(self):
-        pass
-
 
 class AptDistUpgrade(AptBase):
     def run(self):
@@ -82,9 +67,6 @@ class AptDistUpgrade(AptBase):
         if not self.rootfs.exists():
             raise Exception("Unable to find rootfs.")
         self.apt.dist_upgrade()
-
-    def validate(self):
-        pass
 
 
 class AptInstall(AptBase):
@@ -97,6 +79,3 @@ class AptInstall(AptBase):
         if packages is None:
             raise Exception("No package specified.")
         self.apt.install(self.stage.packages)
-
-    def validate(self):
-        pass

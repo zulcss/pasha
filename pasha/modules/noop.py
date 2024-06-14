@@ -21,6 +21,3 @@ class Noop(ModuleBase):
 
     def run(self):
         self.logging.debug("Nothing to do")
-
-    def validate(self):
-        pass

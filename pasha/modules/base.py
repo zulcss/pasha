@@ -15,7 +15,3 @@ class ModuleBase(ABC):
     @abstractmethod
     def run(self):
         pass
-
-    @abstractmethod
-    def validate(self):
-        pass

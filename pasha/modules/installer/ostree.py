@@ -46,9 +46,6 @@ class OstreeInit(ModuleBase):
             ["ostree", "init", "--repo", self.repo, "--mode", f"{self.mode}"]
         )
 
-    def validate(self):
-        pass
-
 
 class OstreePullLocal(ModuleBase):
     def __init__(self, state, config, stage):
@@ -74,9 +71,6 @@ class OstreePullLocal(ModuleBase):
 
         self.logging.info("Updating summary of ostree repository")
         utils.run_command(f"ostree summary -u --repo={repo}", shell=True)
-
-    def validate(self):
-        pass
 
 
 class OstreePullRemote(ModuleBase):
@@ -115,9 +109,6 @@ class OstreePullRemote(ModuleBase):
 
             self.logging.info("Updating summary of ostree repository")
             utils.run_command(f"ostree summary -u --repo={repo}", shell=True)
-
-    def validate(self):
-        pass
 
 
 class OstreeDeploy(ModuleBase):
@@ -163,9 +154,6 @@ class OstreeDeploy(ModuleBase):
         self.logging.debug(f"Copying {var_from} -> {var_to}")
         cmd = f"cp -af {var_from} {var_to}"
         utils.run_command(cmd, shell=True)
-
-    def validate(self):
-        pass
 
 
 class OstreePrep(ModuleBase):
@@ -301,6 +289,3 @@ class OstreePrep(ModuleBase):
                 os.path.join(bootdir, initrd),
                 os.path.join(targetdir, "initramfs.img"),
             )
-
-    def validate(self):
-        pass

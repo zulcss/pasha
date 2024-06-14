@@ -32,9 +32,6 @@ class Deploy(ModuleBase):
         self.rootfs.mkdir(parents=True, exist_ok=True)
         mount(device, self.rootfs)
 
-    def validate(self):
-        pass
-
 
 class Undeploy(ModuleBase):
     def __init__(self, state, config, stage):
@@ -50,6 +47,3 @@ class Undeploy(ModuleBase):
         device = self.config.params.disk
         self.logging.info(f"Unmounting {device}.")
         umount(self.rootfs)
-
-    def validate(self):
-        pass

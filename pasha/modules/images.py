@@ -39,9 +39,6 @@ class RawImage(ModuleBase):
         if ret != 0:
             raise Exception(f"Failed to attach {self.image} to {self.disk}.")
 
-    def validate(self):
-        pass
-
 
 class QemuImage(ModuleBase):
     def __init__(self, state, config, stage):
@@ -71,9 +68,6 @@ class QemuImage(ModuleBase):
         cmd = f"qemu-nbd --connect {self.disk} {self.image}"
         utils.run_command(cmd, shell=True)
 
-    def validate(self):
-        pass
-
 
 class CompressImage(ModuleBase):
     def __init__(self, state, config, stage):
@@ -92,6 +86,3 @@ class CompressImage(ModuleBase):
             sys.exit(1)
 
         compress(self.image, compressor=self.compressor)
-
-    def validate(self):
-        pass
