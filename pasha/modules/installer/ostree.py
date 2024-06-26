@@ -165,7 +165,7 @@ class OstreePrep(ModuleBase):
         self.logging = logging.getLogger(__name__)
         self.repo = self.config.params.repository
         self.branch = self.config.params.branch
-        self.target = self.config.params.tarball
+        self.target = self.config.params.source
         self.rootfs = self.state.workspace.joinpath(f"{self.config.name}/rootfs")
 
     def run(self):
