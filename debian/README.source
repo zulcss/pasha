@@ -2,7 +2,7 @@ Building from source
 --------------------
 Install “git-buildpackage” and run the following steps:
 
-  gbp clone https://gitlab.com/wr-linux/tools/pash
+  gbp clone https://gitlab.com/elxr/tools/pash
   cd pasha
   gbp buildpackage
 
