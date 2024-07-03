@@ -1,8 +1,8 @@
 include:
  - template: Jobs/Secret-Detection.gitlab-ci.yml
  - template: SAST.gitlab-ci.yml
- - https://gitlab.com/wr-linux/ci/pipeline/raw/wr/salsa-ci.yml
- - https://gitlab.com/wr-linux/ci/pipeline/raw/wr/pipeline-jobs.yml
+ - https://gitlab.com/elxr/ci/pipeline/raw/elxr/salsa-ci.yml
+ - https://gitlab.com/elxr/ci/pipeline/raw/elxr/pipeline-jobs.yml
  # Disable until if/when a dockerfile is added to the project
  #- local: .docker-ci.yml
  - local: .python-ci.yml

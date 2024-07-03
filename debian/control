@@ -14,7 +14,7 @@ Build-Depends:
  python3-omegaconf,
  mmdebstrap,
 Standards-Version: 4.7.0
-Homepage: https://gitlab.com/wr-linux/tools/pasha
+Homepage: https://gitlab.com/elxr/tools/pasha
 
 Package: python3-pasha
 Architecture: all
