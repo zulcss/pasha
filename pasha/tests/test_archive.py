@@ -1,3 +1,10 @@
+"""
+Copyright (c) 2024 Wind River Systems, Inc.
+
+SPDX-License-Identifier: Apache-2.0
+
+"""
+
 from unittest import mock
 
 from pasha import archive, exceptions, utils
