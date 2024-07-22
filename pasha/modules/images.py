@@ -40,35 +40,6 @@ class RawImage(ModuleBase):
             raise Exception(f"Failed to attach {self.image} to {self.disk}.")
 
 
-class QemuImage(ModuleBase):
-    def __init__(self, state, config, stage):
-        self.state = state
-        self.config = config
-        self.stage = stage
-        self.logging = logging.getLogger(__name__)
-
-    def run(self):
-        self.image = self.stage.get("name")
-        self.size = self.stage.get("size")
-        self.disk = self.config.params.get("disk")
-
-        if os.path.exists(self.image):
-            self.logging.info(f"Found existing {self.image}. Removing.")
-            os.unlink(self.image)
-
-        if os.path.exists(self.disk):
-            self.logging.info(f"Disconnecting {self.disk}")
-            utils.run_command(["qemu-nbd", "--disconnect", self.disk])
-
-        self.logging.info(f"Creating {self.image}")
-        cmd = ["qemu-img", "create", "-f", "qcow2", self.image, self.size]
-        ret, output = utils.run_command(cmd)
-        if ret != 0:
-            raise Exception(f"Failed to create {self.image}: {output}")
-        cmd = f"qemu-nbd --connect {self.disk} {self.image}"
-        utils.run_command(cmd, shell=True)
-
-
 class CompressImage(ModuleBase):
     def __init__(self, state, config, stage):
         self.state = state
