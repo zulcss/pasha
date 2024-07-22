@@ -78,54 +78,6 @@ class Parted(ModuleBase):
                 utils.run_command(shlex.split(cmd))
 
 
-class Reparted(ModuleBase):
-    """Module that uses systemd-repart to create partitions."""
-
-    def __init__(self, state, config, stage):
-        self.state = state
-        self.config = config
-        self.stage = stage
-
-        self.logging = logging.getLogger(__name__)
-
-    def run(self):
-        self.logging.info("Running systemd-repoart")
-
-        repart = shutil.which("systemd-repart")
-        if repart is None:
-            raise Exception("systemd-repoart binary not found.")
-
-        device = self.config.params.disk
-        if device:
-            if os.path.exists(device):
-                self.logging.info(f"Found {device} from a previous run.")
-                os.unlink(device)
-            size = self.stage.get("size")
-            if size is None:
-                raise Exception("disk size is not specified.")
-            definitions = self.stage.get("definitions")
-            if definitions is None:
-                raise Exception("disk definitions not specified.")
-
-            self.logging.info(f"Creating {device}.")
-            utils.run_command(
-                [
-                    repart,
-                    "--definitions",
-                    str(definitions),
-                    "--empty=create",
-                    "--size",
-                    size,
-                    "--dry-run=no",
-                    "--discard=no",
-                    "--no-pager",
-                    str(device),
-                ]
-            )
-        else:
-            raise Exception("Disk image is not specified.")
-
-
 class Filesystem(ModuleBase):
     """Module that create filesystems on partitions."""
 
