@@ -91,7 +91,7 @@ class Bootstrap(ModuleBase):
             cmd.extend([f"--keyring={hook}" for hook in keyring])
         dpkg_opts = self.stage.get("dpkgopt")
         if dpkg_opts:
-            cmd.extend([f"--dpkgopt='{hook}'" for hook in dpkg_opts])
+            cmd.extend([f"--dpkgopt={hook}" for hook in dpkg_opts])
         format = self.stage.get("format")
         if format:
             cmd.extend([f"--format={format}"])
