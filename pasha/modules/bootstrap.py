@@ -28,15 +28,15 @@ class Bootstrap(ModuleBase):
         if not self.mmdebstrap:
             raise Exception("mmdebstrap is not found.")
 
-        target = self.stage.get("target")
+        target = self.stage.get("target", None)
         if target is None:
             raise exceptions.ConfigError("target is not specified.")
 
-        suite = self.stage.get("suite")
+        suite = self.stage.get("suite", None)
         if suite is None:
             raise exceptions.ConfigError("suite is not found.")
-            if suite not in ["bookworm", "trixie", "testing", "sid"]:
-                raise exceptions.ConfigError(f"{suite} is not a supported  suite.")
+        if suite not in ["bookworm", "trixie", "testing", "sid", "aria"]:
+            raise exceptions.ConfigError(f"{suite} is not a supported  suite.")
 
         self.logging.info("Running mmdebstrap.")
 
