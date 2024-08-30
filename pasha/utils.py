@@ -7,6 +7,7 @@ SPDX-License-Identifier: Apache-2.0
 
 import logging
 import os
+import shlex
 import shutil
 import subprocess
 import sys
@@ -15,19 +16,41 @@ from urllib.parse import urlparse
 LOG = logging.getLogger(__name__)
 
 
-def run_command(args, check=True, **kwargs):
+def run_command(args, **kwargs):
     """Run a command in a shell."""
-    LOG.debug("Running %s" % args)
+    LOG.debug("Running %s" % format_command(args))
 
     outputs = ""
-    sp = subprocess.Popen(
-        args,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        stdin=subprocess.PIPE,
-        universal_newlines=True,
-        **kwargs,
-    )
+    try:
+        sp = subprocess.Popen(
+            args,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            stdin=subprocess.PIPE,
+            universal_newlines=True,
+            **kwargs,
+        )
+    except FileNotFoundError:
+        msg = f"You do not have {args[0]} installed."
+        LOG.error(msg)
+        sys.exit(1)
+    except subprocess.CalledProcessError as e:
+        args = format_command(args)
+        msg = (
+            f"Running the following command {args} resulted in a non-zero return code: "
+        )
+        msg += f"{e.returncode}"
+        LOG.error(msg)
+        LOG.error("'stdout': ")
+        LOG.error(e.stdout)
+        LOG.error("'stderr': ")
+        LOG.error(e.stderr)
+        sys.exit(1)
+    except Exception as e:
+        msg = f"Error running the following command {format_command(args)}: {e}"
+        LOG.error(msg)
+        sys.exit(1)
+
     while True:
         output = sp.stdout.readline()
         if output:
@@ -37,17 +60,11 @@ def run_command(args, check=True, **kwargs):
             break
 
     # Read the remaining logs from stdout after process terminates
+    ret = sp.poll()
     output = sp.stdout.read()
     if output:
         LOG.debug(output.rstrip("\n"))
         outputs += output
-
-    ret = sp.poll()
-
-    if ret != 0:
-        LOG.error(f"Failed to run command {args}\n{outputs}")
-        if check:
-            sys.exit(1)
 
     return ret, outputs.rstrip("\n")
 
@@ -102,3 +119,9 @@ def fetch(source):
 
 def which(cmd):
     return shutil.which(cmd)
+
+
+def format_command(args):
+    """Format command string for pretty printing."""
+    if isinstance(args, list):
+        return subprocess.list2cmdline(args)
