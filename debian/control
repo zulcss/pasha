@@ -12,6 +12,7 @@ Build-Depends:
  python3-yaml,
  python3-oslotest,
  python3-omegaconf,
+ python3-pytest,
  mmdebstrap,
 Standards-Version: 4.7.0
 Homepage: https://gitlab.com/elxr/tools/pasha
