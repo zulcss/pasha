@@ -7,7 +7,7 @@ SPDX-License-Identifier: Apache-2.0
 import logging
 import os
 
-from pasha import utils
+from pasha import exceptions, utils
 from pasha.archive import compress
 from pasha.modules.base import ModuleBase
 
@@ -20,15 +20,19 @@ class RawImage(ModuleBase):
         self.logging = logging.getLogger(__name__)
 
     def run(self):
-        self.image = self.stage.get("name")
-        self.size = self.stage.get("size")
-        self.logging.info(f"Creating {self.image}")
+        self.size = self.stage.get("size", None)
+        if self.size is None:
+            raise exceptions.ConfigError("Disk size is not specified.")
+        self.disk = self.stage.get("name", None)
+        if self.disk is None:
+            raise exceptions.ConfigError("Disk is not specified.")
+        self.logging.info(f"Creating {self.disk}")
 
-        if os.path.exists(self.image):
-            self.logging.info(f"Found existing {self.image}. Removing.")
-            os.unlink(self.image)
+        if os.path.exists(self.disk):
+            self.logging.info(f"Found existing {self.disk}. Removing.")
+            os.unlink(self.disk)
 
-        utils.run_command(["truncate", "-s", self.size, self.image])
+        utils.run_command(["truncate", "-s", self.size, self.disk])
 
 
 class CompressImage(ModuleBase):

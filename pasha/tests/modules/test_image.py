@@ -7,9 +7,10 @@ SPDX-License-Identifier: Apache-2.0
 
 from unittest import mock
 
+import pytest
 from omegaconf import OmegaConf
 
-from pasha import utils
+from pasha import exceptions, utils
 from pasha.modules import images
 from pasha.tests import base
 
@@ -35,3 +36,13 @@ class TestImage(base.TestCase):
         images.RawImage(self.state, self.conf, self.stage).run()
         mock_exec.assert_has_calls(expected_calls)
         mock_unlink.assert_called_once_with("fake_image.img")
+
+    def test_image_create_without_image_name(self):
+        stage = OmegaConf.create({"size": "20G"})
+        with pytest.raises(exceptions.ConfigError):
+            images.RawImage(self.state, self.conf, stage).run()
+
+    def test_image_create_without_image_size(self):
+        stage = OmegaConf.create({"name": "foo"})
+        with pytest.raises(exceptions.ConfigError):
+            images.RawImage(self.state, self.conf, stage).run()
