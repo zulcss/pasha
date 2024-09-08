@@ -1,5 +1,10 @@
-import pathlib
-import tempfile
+"""
+Copyright (c) 2024 Wind River Systems, Inc.
+
+SPDX-License-Identifier: Apache-2.0
+
+"""
+
 from unittest import mock
 
 from omegaconf import OmegaConf
@@ -19,11 +24,14 @@ class TestImage(base.TestCase):
         self.stage = OmegaConf.create({"name": "fake_image.img", "size": "20G"})
 
     @mock.patch("pasha.utils.run_command")
-    def test_image_create(self, mock_exec):
+    @mock.patch("os.path.exists")
+    @mock.patch("os.unlink")
+    def test_image_create(self, mock_unlink, mock_os_path, mock_exec):
         expected_calls = [
             mock.call(["truncate", "-s", "20G", "fake_image.img"]),
-            mock.call(["losetup", "--partscan", "/dev/loop0", "fake_image.img"]),
         ]
         mock_exec.return_value = (0, "")
+        mock_os_path.return_value = True
         images.RawImage(self.state, self.conf, self.stage).run()
         mock_exec.assert_has_calls(expected_calls)
+        mock_unlink.assert_called_once_with("fake_image.img")
