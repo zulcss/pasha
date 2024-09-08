@@ -22,22 +22,13 @@ class RawImage(ModuleBase):
     def run(self):
         self.image = self.stage.get("name")
         self.size = self.stage.get("size")
-        self.disk = self.config.params.get("disk")
-        self.logging.info(f"Creating {self.image} on {self.disk}.")
+        self.logging.info(f"Creating {self.image}")
 
         if os.path.exists(self.image):
             self.logging.info(f"Found existing {self.image}. Removing.")
             os.unlink(self.image)
 
-        cmd = ["truncate", "-s", self.size, self.image]
-        ret, _ = utils.run_command(cmd)
-        if ret != 0:
-            raise Exception(f"Failed to create {self.image}.")
-        self.logging.info(f"Attaching {self.image} to {self.disk}")
-        cmd = ["losetup", "--partscan", self.disk, self.image]
-        ret, _ = utils.run_command(cmd)
-        if ret != 0:
-            raise Exception(f"Failed to attach {self.image} to {self.disk}.")
+        utils.run_command(["truncate", "-s", self.size, self.image])
 
 
 class CompressImage(ModuleBase):
