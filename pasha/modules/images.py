@@ -6,6 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 
 import logging
 import os
+import sys
 
 from pasha import exceptions, utils
 from pasha.archive import compress
