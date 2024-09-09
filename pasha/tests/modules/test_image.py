@@ -66,3 +66,8 @@ class TestImageCompress(base.TestCase):
         mock_os_path.return_value = True
         images.CompressImage(self.state, self.conf, stage).run()
         mock_os_path.assert_called_with("foo")
+
+    def test_image_compress_without_name(self):
+        stage = OmegaConf.create({"compression": "zstd"})
+        with pytest.raises(exceptions.ConfigError):
+            images.CompressImage(self.state, self.conf, stage).run()

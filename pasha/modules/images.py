@@ -44,7 +44,9 @@ class CompressImage(ModuleBase):
         self.logging = logging.getLogger(__name__)
 
     def run(self):
-        self.image = self.stage.get("name")
+        self.image = self.stage.get("name", None)
+        if self.image is None:
+            raise exceptions.ConfigError("Image to compress is not specified.")
         self.compressor = self.stage.get("compression", "zstd")
         self.logging.info(f"Compress {self.image}.")
 
