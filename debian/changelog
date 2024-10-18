@@ -1,3 +1,18 @@
+pasha (0.1.10) unstable; urgency=medium
+
+  * New upstream release:
+    - 4d21d0f4: Remove validate method.
+    - f8a93bbd: Fix regression with ostree repository.
+    - 88563838: Remove systemd-repart
+    - 5894b4df: Remove qcow2 code.
+    - 6550c8ff: Add container image build
+    - 6c9464df: Use "dpkg_opt" instead of "dpkg_opts"
+    - 7cfbd087: Ensure consistiency of options passed to mmdebstrap
+    - 6f19b072: Fix unit testing mocking for bootstrap module
+    - 2bd65220: Add module to run shell during manifest creation 
+
+ -- Chuck Short <charles.short@windriver.com>  Fri, 18 Oct 2024 17:37:31 +0000
+
 pasha (0.1.9) unstable; urgency=medium
 
   * New upstream release
