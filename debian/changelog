@@ -1,3 +1,10 @@
+pasha (0.1.11) unstable; urgency=medium
+
+  * New upstream release:
+    - 3d827de3: Install dtb files into EFI partition
+
+ -- Meng Li <Meng.Li@windriver.com>  Tue, 05 Nov 2024 09:44:46 +0800
+
 pasha (0.1.10) unstable; urgency=medium
 
   * New upstream release:
