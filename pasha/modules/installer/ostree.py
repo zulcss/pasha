@@ -18,7 +18,7 @@ from pasha.modules.base import ModuleBase
 
 def ostree(*args, **kwargs):
     args = list(args) + [f"--{k}={v}" for k, v in kwargs.items()]
-    utils.run_command(["ostree"] + args, check=True)
+    utils.run_command(["ostree"] + args)
 
 
 class OstreeInit(ModuleBase):
