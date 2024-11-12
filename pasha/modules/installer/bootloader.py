@@ -8,7 +8,7 @@ import logging
 import os
 import shutil
 
-from pasha import utils
+from pasha import exceptions, target, utils
 from pasha.modules.base import ModuleBase
 
 
@@ -172,3 +172,38 @@ class BootloaderOstree(ModuleBase):
                     efi=self.rootfs,
                     boot=self.rootfs,
                 )
+
+
+class BootloaderGrub(ModuleBase):
+    def __init__(self, state, config, stage):
+        self.state = state
+        self.config = config
+        self.stage = stage
+
+        self.logging = logging.getLogger(__name__)
+        self.mounts = self.config.params.get("mounts", None)
+        self.device = self.config.params.get("image", None)
+        self.rootfs = self.state.workspace.joinpath(f"{self.config.name}/rootfs")
+
+    def run(self):
+        self.logging.info("Setting up grub bootloader")
+
+        if self.device is None:
+            raise exceptions.ConfigError("Disk is not specified.")
+        if not os.path.exists(self.device):
+            raise exceptions.ConfigError(f"{self.device} is not found.")
+
+        with target.RunInTarget(
+            image=self.config.params.image, rootfs=self.rootfs, mounts=self.mounts
+        ) as chroot:
+            chroot.run(["update-grub"])
+            chroot.run(
+                [
+                    "grub-install",
+                    "--uefi-secure-boot",
+                    "--target=x86_64-efi",
+                    "--no-nvram",
+                    "--removable",
+                ]
+            )
+            chroot.run(["update-grub"])
