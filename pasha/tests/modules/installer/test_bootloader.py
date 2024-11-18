@@ -40,16 +40,12 @@ class TestBootloader(base.TestCase):
     @mock.patch("os.path.exists")
     @mock.patch("subprocess.run")
     @mock.patch("pasha.block.remove_loopback")
-    def test_grub_bootloader(self, mock_removeloop, mock_run, mock_os):
+    @mock.patch("pasha.block.create_loopback")
+    def test_grub_bootloader(self, mock_createloop, mock_removeloop, mock_run, mock_os):
         rootfs = self.state.workspace.joinpath("fake_name/rootfs")
         mock_os.return_value = True
+        mock_createloop.return_value = "/dev/loop0"
         expected_calls = [
-            mock.call(
-                ["losetup", "--find", "--show", "--partscan", "fake_image.img"],
-                stdout=-1,
-                encoding="utf-8",
-                check=True,
-            ),
             mock.call(["udevadm", "settle"], check=True),
             mock.call(
                 ["mount", "-t", "ext4", "/dev/disk/by-partlabel/ROOT", rootfs],

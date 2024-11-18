@@ -35,6 +35,7 @@ def create_loopback(image):
             check=True,
         )
         loopdev = cp.stdout.rstrip()
+        subprocess.run(["partprobe", loopdev])
         LOG.debug(f"Found {loopdev}.")
         return loopdev
     except subprocess.CalledProcessError as error:
@@ -58,6 +59,7 @@ def image(image):
     LOG.debug("Looking for free loopback device.")
     loopdev = create_loopback(image)
     try:
+        subprocess.run(["udevadm", "trigger", loopdev], check=True)
         yield loopdev
     finally:
         remove_loopback(loopdev)
