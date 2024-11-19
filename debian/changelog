@@ -1,3 +1,22 @@
+pasha (0.1.12) unstable; urgency=medium
+
+  * New upstream release:
+    - 9a300a: Update setup.cfg.
+    - f071a4: Remove the usage of "losetup"
+    - d06d52: Ensure image and size parameters are validated.
+    - 566040: Compress: Fix missing import
+    - 3fdae1: Add unit tests for compressor.
+    - eb3d1d: Add new unit tests.
+    - da4a2a: Ensure image name verification.
+    - a49ff6: Fix loopback device loading.
+    - 947d18: Refactor run_command method.
+    - db4080: Remove check from run_command
+    - 73c457: Add RunInTarget helper
+    - 8a6de9: Add support for grub
+    - be34de: Fix udev race with losetup
+
+ -- Chuck Short <charles.short@windriver.com>  Tue, 19 Nov 2024 14:46:38 +0000
+
 pasha (0.1.11) unstable; urgency=medium
 
   * New upstream release:
