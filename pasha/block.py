@@ -7,8 +7,8 @@ SPDX-License-Identifier: Apache-2.0
 import contextlib
 import logging
 import os
-import subprocess
 import stat
+import subprocess
 import sys
 
 LOG = logging.getLogger(__name__)
