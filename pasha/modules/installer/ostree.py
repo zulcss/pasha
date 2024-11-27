@@ -240,6 +240,7 @@ class OstreePrep(ModuleBase):
             "root": "var/roothome",
             "srv": "var/srv",
             "usr/local": "../var/usrlocal",
+            "home": "var/home",
         }
         fd = os.open(self.rootfs, os.O_DIRECTORY)
         for l, t in TOPLEVEL_LINKS.items():
