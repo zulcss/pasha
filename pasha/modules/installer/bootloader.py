@@ -196,12 +196,15 @@ class BootloaderGrub(ModuleBase):
         with target.RunInTarget(
             image=self.config.params.image, rootfs=self.rootfs, mounts=self.mounts
         ) as chroot:
+            arch = "x86_64-efi"
+            if self.config.architecture == "arm64":
+                arch = "arm64-efi"
             chroot.run(["update-grub"])
             chroot.run(
                 [
                     "grub-install",
                     "--uefi-secure-boot",
-                    "--target=x86_64-efi",
+                    f"--target={arch}",
                     "--no-nvram",
                     "--removable",
                 ]
