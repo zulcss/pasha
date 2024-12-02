@@ -1,3 +1,10 @@
+pasha (0.1.13) unstable; urgency=medium
+
+  * New upstream release:
+    - 7fcdc5f8: ostree move home to var directory.
+
+ -- Chuck Short <charles.short@windriver.com>  Mon, 02 Dec 2024 08:19:21 -0500
+
 pasha (0.1.12) unstable; urgency=medium
 
   * New upstream release:
