@@ -8,6 +8,7 @@ import logging
 import os
 import subprocess
 import sys
+import time
 
 from pasha import block, udev
 
@@ -58,6 +59,10 @@ class RunInTarget(object):
         for m in self.mounts:
             disk = f"/dev/disk/by-partlabel/{m.label}"
             LOG.info(f"Finding {disk}.")
+            for retry in range(0, 5):
+                if os.path.exists(disk):
+                    break
+                time.sleep(0.25)
             if not os.path.exists(disk):
                 LOG.error(f"ERROR. {disk} not found.")
                 raise RuntimeError("Unable to mount all required mounts.")
