@@ -69,12 +69,12 @@ class RunInTarget(object):
 
             target = m.target
             if target == "/":
-                LOG.info(f"Found {m.target} mouning on {self.rootfs}.")
+                LOG.info(f"Found {m.target} mounting on {self.rootfs}.")
                 self.rootfs.mkdir(parents=True, exist_ok=True)
                 target = self.rootfs
             else:
                 target = self.rootfs.joinpath(m.target)
-                LOG.info(f"Found {m.target} mouning on {target}.")
+                LOG.info(f"Found {m.target} mounting on {target}.")
                 if not target.exists():
                     LOG.info(f"Creating {target}")
                     target.mkdir(parents=True, exist_ok=True)
