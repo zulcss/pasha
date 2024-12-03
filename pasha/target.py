@@ -29,12 +29,26 @@ class RunInTarget(object):
         """Create loopback deivce and mount it."""
         self.device = block.create_loopback(self.image)
         udev.settle()
-        self.mount()
+        try:
+            self.mount()
+        except RuntimeError as e:
+            LOG.error(f"{e} Cleaning up and Exiting!!")
+            try:
+                self.umount()
+            except:
+                pass  # Ignore unmount issues, their expected
+            block.remove_loopback(self.device)
+            sys.exit(1)
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
         """Umount and remove loopback device."""
-        self.umount()
+        try:
+            self.umount()
+        except RuntimeError as e:
+            LOG.error(f"{e} Cleaning up and Exiting!!")
+            block.remove_loopback(self.device)
+            sys.exit(1)
         block.remove_loopback(self.device)
 
     def mount(self):
@@ -45,8 +59,8 @@ class RunInTarget(object):
             disk = f"/dev/disk/by-partlabel/{m.label}"
             LOG.info(f"Finding {disk}.")
             if not os.path.exists(disk):
-                LOG.error(f"ERROR. {disk} not found. Exiting")
-                sys.exit(1)
+                LOG.error(f"ERROR. {disk} not found.")
+                raise RuntimeError("Unable to mount all required mounts.")
 
             target = m.target
             if target == "/":
@@ -65,7 +79,7 @@ class RunInTarget(object):
                 subprocess.run(["mount", "-t", m.fs, disk, target], check=True)
             except subprocess.CalledProcessError as error:
                 LOG.error(f"Failed to mount {target}: {error}")
-                sys.exit(1)
+                raise RuntimeError("Unable to mount all required mounts.")
 
         for f in self.fs:
             bind = self.rootfs.joinpath(f)
@@ -74,7 +88,7 @@ class RunInTarget(object):
                 subprocess.run(["mount", "-o", "bind", f"/{f}", bind], check=True)
             except subprocess.CalledProcessError as error:
                 LOG.error(f"Failed to bind {bind}: {error}")
-                sys.exit(1)
+                raise RuntimeError("Unable to mount all required mounts.")
 
     def umount(self):
         """Umount the previously mounted target image."""
@@ -83,7 +97,7 @@ class RunInTarget(object):
             subprocess.run(["umount", "-l", self.rootfs], check=True)
         except subprocess.CalledProcessError as error:
             LOG.error(f"Failed to umount {bind}: {error}")
-            sys.exit(1)
+            raise RuntimeError("Unable to unmount all mounts.")
 
     def run(self, args):
         """Run a command in a previously mounted environment."""
@@ -91,5 +105,6 @@ class RunInTarget(object):
             LOG.debug(f"Running {args}.")
             subprocess.run(["chroot", self.rootfs] + args, check=True)
         except subprocess.CalledProcessError as error:
-            LOG.error(f"Failed to run command: {error}")
-            sys.exit(1)
+            errmsg = f"Failed to run command: {error}"
+            LOG.error(errmsg)
+            raise RuntimeError(errmsg)

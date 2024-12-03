@@ -6,6 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 
 import logging
 import os
+import sys
 import shutil
 
 from pasha import exceptions, target, utils
@@ -193,20 +194,24 @@ class BootloaderGrub(ModuleBase):
         if not os.path.exists(self.device):
             raise exceptions.ConfigError(f"{self.device} is not found.")
 
-        with target.RunInTarget(
-            image=self.config.params.image, rootfs=self.rootfs, mounts=self.mounts
-        ) as chroot:
-            arch = "x86_64-efi"
-            if self.config.architecture == "arm64":
-                arch = "arm64-efi"
-            chroot.run(["update-grub"])
-            chroot.run(
-                [
-                    "grub-install",
-                    "--uefi-secure-boot",
-                    f"--target={arch}",
-                    "--no-nvram",
-                    "--removable",
-                ]
-            )
-            chroot.run(["update-grub"])
+        try:
+            with target.RunInTarget(
+                image=self.config.params.image, rootfs=self.rootfs, mounts=self.mounts
+            ) as chroot:
+                arch = "x86_64-efi"
+                if self.config.architecture == "arm64":
+                    arch = "arm64-efi"
+                chroot.run(["update-grub"])
+                chroot.run(
+                    [
+                        "grub-install",
+                        "--uefi-secure-boot",
+                        f"--target={arch}",
+                        "--no-nvram",
+                        "--removable",
+                    ]
+                )
+                chroot.run(["update-grub"])
+        except RuntimeError:
+            self.logging.error("Unable to run all commands. Exiting!!")
+            sys.exit(1)
