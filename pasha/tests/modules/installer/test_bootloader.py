@@ -78,6 +78,7 @@ class TestBootloader(base.TestCase):
             ),
             mock.call(["chroot", rootfs, "update-grub"], check=True),
             mock.call(["umount", "-l", rootfs], check=True),
+            mock.call(["udevadm", "settle"], check=True),
         ]
         BootloaderGrub(self.state, self.config, self.stage).run()
         self.assertEqual(mock_run.call_args_list, expected_calls)
@@ -136,6 +137,7 @@ class TestBootloader(base.TestCase):
             ),
             mock.call(["chroot", rootfs, "update-grub"], check=True),
             mock.call(["umount", "-l", rootfs], check=True),
+            mock.call(["udevadm", "settle"], check=True),
         ]
         BootloaderGrub(self.state, self.config, self.stage).run()
         self.assertEqual(mock_run.call_args_list, expected_calls)

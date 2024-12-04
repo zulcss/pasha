@@ -5,7 +5,9 @@ SPDX-License-Identifier: Apache-2.0
 
 """
 
-from pasha import exceptions, utils
+import time
+
+from pasha import exceptions, udev, utils
 
 
 def mount(image, rootfs):
@@ -16,6 +18,7 @@ def mount(image, rootfs):
     ) = utils.run_command(["systemd-dissect", "-m", image, rootfs])
     if ret != 0:
         raise exceptions.CommandError(f"Failed to mount {image} on {rootfs}: {output}")
+    udev.settle()
     return ret
 
 
@@ -24,4 +27,6 @@ def umount(rootfs):
     ret, output = utils.run_command(["systemd-dissect", "-u", rootfs])
     if ret != 0:
         raise exceptions.CommandError(f"Failed to umount {rootfs}: {output}")
+    udev.settle()
+    time.sleep(2)
     return ret

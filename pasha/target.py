@@ -51,6 +51,7 @@ class RunInTarget(object):
             block.remove_loopback(self.device)
             sys.exit(1)
         block.remove_loopback(self.device)
+        udev.settle()
 
     def mount(self):
         """Setup mount points from the image so that the command in a
