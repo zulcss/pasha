@@ -36,7 +36,7 @@ class RunInTarget(object):
             LOG.error(f"{e} Cleaning up and Exiting!!")
             try:
                 self.umount()
-            except:
+            except RuntimeError:
                 pass  # Ignore unmount issues, their expected
             block.remove_loopback(self.device)
             sys.exit(1)
