@@ -102,7 +102,7 @@ class RunInTarget(object):
             LOG.debug(f"Umounting {self.rootfs}.")
             subprocess.run(["umount", "-l", self.rootfs], check=True)
         except subprocess.CalledProcessError as error:
-            LOG.error(f"Failed to umount {bind}: {error}")
+            LOG.error(f"Failed to umount {self.rootfs}: {error}")
             raise RuntimeError("Unable to unmount all mounts.")
 
     def run(self, args):
