@@ -11,7 +11,7 @@ from unittest import mock
 
 from omegaconf import OmegaConf
 
-from pasha import utils
+from pasha import udev, utils
 from pasha.modules import deploy
 from pasha.tests import base
 
@@ -27,19 +27,23 @@ class TestUnDeploy(base.TestCase):
         )
 
     @mock.patch("pasha.utils.run_command")
-    def test_uddeploy(self, mock_umount):
+    @mock.patch("pasha.udev.settle")
+    def test_undeploy(self, mock1, mock2):
         rootfs = self.tempdir.joinpath("fake_name/rootfs")
         rootfs.mkdir(parents=True, exist_ok=True)
-        mock_umount.return_value = (0, "")
+        utils.run_command.return_value = (0, "")
         deploy.Undeploy(self.state, self.conf, {}).run()
-        mock_umount.assert_called_once_with(["systemd-dissect", "-u", rootfs])
+        utils.run_command.assert_called_once_with(["systemd-dissect", "-u", rootfs])
+        udev.settle.assert_called_once_with()
 
     @mock.patch("pasha.utils.run_command")
-    def test_deploy(self, mock_mount):
+    @mock.patch("pasha.udev.settle")
+    def test_deploy(self, mock1, mock2):
         rootfs = self.tempdir.joinpath("fake_name/rootfs")
         rootfs.mkdir(parents=True, exist_ok=True)
-        mock_mount.return_value = (0, "")
+        utils.run_command.return_value = (0, "")
         deploy.Deploy(self.state, self.conf, {}).run()
-        mock_mount.assert_called_once_with(
+        utils.run_command.assert_called_once_with(
             ["systemd-dissect", "-m", "/dev/loop0", rootfs]
         )
+        udev.settle.assert_called_once_with()
