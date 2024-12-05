@@ -25,7 +25,7 @@ def is_block(device):
 
 
 def create_loopback(image):
-    """Create a loopback deivce."""
+    """Create a loopback device."""
     LOG.debug("Looking for free loopback device.")
 
     try:

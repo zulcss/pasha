@@ -22,12 +22,12 @@ class RunInTarget(object):
         self.image = image
         self.rootfs = rootfs
         self.mounts = mounts
-        self.deivce = None
+        self.device = None
         # File systems to mount from the host.
         self.fs = ["dev", "proc", "sys"]
 
     def __enter__(self):
-        """Create loopback deivce and mount it."""
+        """Create loopback device and mount it."""
         self.device = block.create_loopback(self.image)
         udev.settle()
         try:
