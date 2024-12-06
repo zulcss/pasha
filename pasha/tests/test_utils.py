@@ -10,7 +10,7 @@ from unittest import mock
 
 import pytest
 
-from pasha import mount, utils
+from pasha import utils
 from pasha.tests import base
 
 

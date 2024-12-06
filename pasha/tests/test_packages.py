@@ -12,7 +12,7 @@ from unittest import mock
 
 from omegaconf import OmegaConf
 
-from pasha import exceptions, packages, utils
+from pasha import packages
 from pasha.tests import base
 
 

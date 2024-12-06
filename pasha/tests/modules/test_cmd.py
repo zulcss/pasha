@@ -11,7 +11,6 @@ from unittest import mock
 
 from omegaconf import OmegaConf
 
-from pasha import utils
 from pasha.modules import cmd
 from pasha.tests import base
 

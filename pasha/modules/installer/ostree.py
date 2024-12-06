@@ -4,13 +4,10 @@ Copyright (c) 2024 Wind River Systems, Inc.
 SPDX-License-Identifier: Apache-2.0
 """
 
-import hashlib
 import logging
 import os
 import pathlib
-import shlex
 import shutil
-import sys
 
 from pasha import exceptions, utils
 from pasha.modules.base import ModuleBase

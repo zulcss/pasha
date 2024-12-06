@@ -5,11 +5,9 @@ SPDX-License-Identifier: Apache-2.0
 """
 
 import logging
-import os
 
 from pasha import utils
 from pasha.modules.base import ModuleBase
-from pasha.mount import mount, umount
 
 
 class BootOrder(ModuleBase):
