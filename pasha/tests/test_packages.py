@@ -217,7 +217,7 @@ class TestPackages(base.TestCase):
 
     @mock.patch("pasha.utils.run_command")
     @mock.patch.dict(os.environ, {}, clear=True)
-    def test_apt_upgrade(self, mock_exec):
+    def test_apt_dist_upgrade(self, mock_exec):
         rootfs = self.tempdir.joinpath("fake_name/rootfs")
         rootfs.mkdir(parents=True, exist_ok=True)
         mock_exec.return_value = (0, "")
