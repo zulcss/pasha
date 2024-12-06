@@ -6,6 +6,8 @@ SPDX-License-Identifier: Apache-2.0
 
 import contextlib
 import logging
+import os
+import stat
 import subprocess
 import sys
 
