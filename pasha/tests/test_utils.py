@@ -23,5 +23,5 @@ class TestUtils(base.TestCase):
             )
 
     def test_run_command_not_found(self):
-        with pytest.raises(SystemExit) as err:
+        with pytest.raises(SystemExit):
             utils.run_command(["foo"])

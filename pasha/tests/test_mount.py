@@ -16,7 +16,7 @@ class TestMount(base.TestCase):
     @mock.patch("pasha.udev.settle")
     def test_mount(self, mock1, mock2):
         utils.run_command.return_value = (0, "fake_output")
-        ret = mount.mount("fake_image", "fake_root")
+        mount.mount("fake_image", "fake_root")
         utils.run_command.assert_called_once_with(
             ["systemd-dissect", "-m", "fake_image", "fake_root"]
         )
@@ -26,7 +26,7 @@ class TestMount(base.TestCase):
     @mock.patch("pasha.udev.settle")
     def test_umount(self, mock1, mock2):
         utils.run_command.return_value = (0, "fake_output")
-        ret = mount.umount("fake_image")
+        mount.umount("fake_image")
         utils.run_command.assert_called_once_with(
             ["systemd-dissect", "-u", "fake_image"]
         )
