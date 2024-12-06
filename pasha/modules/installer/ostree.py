@@ -60,7 +60,7 @@ class OstreePullLocal(ModuleBase):
         repo = self.rootfs.joinpath("ostree/repo")
         self.logging.info(f"Pulling {self.branch} from {self.repo}")
         if not repo.exists():
-            raise exeptions.ConfigError(f"{repo} does not exist.")
+            raise exceptions.ConfigError(f"{repo} does not exist.")
 
         utils.run_command(
             ["ostree", "pull-local", "--repo", repo, self.repo, self.branch]
