@@ -24,7 +24,7 @@ class Apt(object):
         self.logging.info("Running apt-get clean.")
         ret, _ = utils.run_chroot_command(["apt-get", "clean"], self.rootfs)
         if ret != 0:
-            raise Exception(f"Failed to run apt-get clean.")
+            raise Exception("Failed to run apt-get clean.")
 
     def install(self, packages):
         """Run apt-get package install."""
