@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 """
 
-import subprocess
 from unittest import mock
 
 from pasha import block

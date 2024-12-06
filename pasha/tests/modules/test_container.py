@@ -1,11 +1,9 @@
-import os
 import pathlib
 import tempfile
 from unittest import mock
 
 from omegaconf import OmegaConf
 
-from pasha import utils
 from pasha.modules import container
 from pasha.tests import base
 

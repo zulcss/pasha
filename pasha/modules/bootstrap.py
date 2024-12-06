@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 """
 
 import logging
-import os
 import shutil
 
 from pasha import exceptions, utils

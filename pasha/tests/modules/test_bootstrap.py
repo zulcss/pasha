@@ -6,14 +6,12 @@ SPDX-License-Identifier: Apache-2.0
 """
 
 import pathlib
-import shutil
 import tempfile
 from unittest import mock
 
 import pytest
 from omegaconf import OmegaConf
 
-from pasha import utils
 from pasha.modules import bootstrap
 from pasha.tests import base
 

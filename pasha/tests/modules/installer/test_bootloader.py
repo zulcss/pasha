@@ -5,15 +5,12 @@ SPDX-License-Identifier: Apache-2.0
 
 """
 
-import os
 import pathlib
-import subprocess
 import tempfile
 from unittest import mock
 
 from omegaconf import OmegaConf
 
-from pasha import exceptions
 from pasha.modules.installer.bootloader import BootloaderGrub
 from pasha.tests import base
 
