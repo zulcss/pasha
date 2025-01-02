@@ -1,16 +1,31 @@
 """
-Copyright (c) 2024-2025 Wind River Systems, Inc.
+Copyright (c) 2024,2025 Wind River Systems, Inc.
 
 SPDX-License-Identifier: Apache-2.0
 """
 
+import contextlib
 import logging
 import os
 import shlex
+import shutil
+import subprocess
 import sys
 
 from pasha import exceptions, utils
+from pasha.context import Context
+from pasha.log import complete_step, die
+from pasha.loop import attach_image_loopback
 from pasha.modules.base import ModuleBase
+
+
+def show_disk(disk):
+    """Display the results of the parted command."""
+    try:
+        logging.info("\nDisk layout result\n")
+        subprocess.run(["parted", disk, "print"], check=True)
+    except subprocess.CalledProcessError as e:
+        die(f"Failed to display disk:" + e.stderr.decode("utf-8").strip())
 
 
 class Parted(ModuleBase):
@@ -21,60 +36,74 @@ class Parted(ModuleBase):
         self.config = config
         self.stage = stage
 
-        self.logging = logging.getLogger(__name__)
-        self.device = self.config.params.disk
-        self.slices = self.stage.slices
-        self.no_erase = self.stage.get("noerase", None)
+        if not shutil.which("parted"):
+            die(
+                "Parted is not installed",
+                hint="As root run 'apt-get install -y parted' to install parted.",
+            )
+
+        if not shutil.which("sfdisk"):
+            die(
+                "sfdisk is not installed.",
+                hint="As root run 'apt-get install -y fdisk' to install sfdisk.",
+            )
+
+        self.context = Context(self.state, self.config, self.stage)
+        self.erase = self.context.stage.get("noerase", False)
+        self.disk = self.context.params.disk
+
+        if not os.path.exists(self.disk):
+            die(f"{self.disk} does not exist.")
 
     def run(self):
-        self.logging.info("Running parted.")
-
-        if not os.path.exists(self.device):
-            raise exceptions.ConfigError(f"{self.device} does not exist.")
-
-        if not self.no_erase:
-            self.logging.info(f"Erase available filesystem on {self.device}.")
-            utils.run_command(["wipefs", "-f", "-a", self.device])
-
-        self.logging.info("Creating gpt disk label.")
-        utils.run_command(["parted", self.device, "--script", "mklabel", "gpt"])
-
-        self.logging.info("Creating partitions.")
-        for index, part in enumerate(self.slices, start=1):
-            self.logging.info(f"Creating partition {index}: {part.name}")
-            utils.run_command(
-                [
-                    "parted",
-                    "-a",
-                    "optimal",
-                    "-s",
-                    self.device,
-                    "--",
-                    "mkpart",
-                    part.name,
-                    part.start,
-                    part.end,
-                ]
-            )
-            if len(part.flags) != 0:
-                for flag in part.flags:
-                    utils.run_command(
-                        [
-                            "parted",
-                            "-a",
-                            "optimal",
-                            "-s",
-                            self.device,
-                            "--",
-                            "set",
-                            str(index),
-                            flag,
-                            "on",
-                        ]
+        with complete_step("Creating partition table"):
+            if self.erase:
+                try:
+                    subprocess.run(
+                        ["wipefs", "-f", "-a", self.disk],
+                        capture_output=True,
+                        check=True,
                     )
-            if part.id:
-                cmd = f"sfdisk --part-type {self.device} {index} {part.id}"
-                utils.run_command(shlex.split(cmd))
+                except subprocess.CalledProcessError as e:
+                    die(f"Failed to run wipefs:" + e.stderr.decode("utf-8").strip())
+
+            commands = ["mklabel", "gpt"]
+            for index, part in enumerate(self.context.stage.slices, start=1):
+                logging.info(f"Creating partition {index}: {part['name']}")
+                commands += ["mkpart", part["name"], part["start"], part["end"]]
+                if len(part["flags"]) != 0:
+                    for flag in part["flags"]:
+                        commands += ["set", str(index), flag, "on"]
+
+            self.run_parted(commands)
+
+            """Set the UUID for partition so can mount the block device
+               later via systemd-dissect."""
+            for index, part in enumerate(self.context.stage.slices, start=1):
+                id = part["id"]
+                if id:
+                    try:
+                        cmd = f"sfdisk --part-type {self.disk} {index} {id}"
+                        subprocess.run(
+                            shlex.split(cmd),
+                            capture_output=True,
+                            check=True,
+                        )
+                    except subprocess.CalledProcessError as e:
+                        die(f"Failed to run sfdisk:" + e.stderr.decode("utf-8").strip())
+
+            show_disk(self.disk)
+
+    def run_parted(self, commands):
+        try:
+            logging.info(f"Running parted on {self.disk}.")
+            subprocess.run(
+                ["parted", "-a", "optimal", "-s", self.disk, "--"] + commands,
+                capture_output=True,
+                check=True,
+            )
+        except subprocess.CalledProcessError as e:
+            die(f"Failed to run parted: " + e.stderr.decode("utf-8").strip())
 
 
 class Filesystem(ModuleBase):
