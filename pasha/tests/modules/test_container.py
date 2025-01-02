@@ -30,13 +30,16 @@ class TestContainerBuildModule(base.TestCase):
         )
         self.stage = OmegaConf.create({"image": "fake_image:latest"})
 
+    @mock.patch("subprocess.run")
     @mock.patch("pasha.utils.run_command")
     @mock.patch("os.path.exists")
     @mock.patch("shutil.which")
     @mock.patch("shutil.rmtree")
-    def test_container_bulid(self, mock_shutil, mock_which, mock_exists, mock_exec):
+    def test_container_bulid(
+        self, mock_shutil, mock_which, mock_exists, mock_exec, mock_run
+    ):
         mock_exec.return_value = (0, "")
         mock_exists.return_value = True
         mock_shutil.return_value = True
         container.Container(self.state, self.config, self.stage).run()
-        self.assertEqual(mock_exec.call_count, 4)
+        self.assertEqual(mock_exec.call_count, 3)

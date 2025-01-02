@@ -7,29 +7,36 @@ SPDX-License-Identifier: Apache-2.0
 
 import logging
 import os
-import sys
+import shlex
+import subprocess
 
-from pasha import exceptions, utils
-
-log = logging.getLogger(__name__)
+from pasha.log import die
 
 
 def unpack(archive, rootfs):
     """Unpack a tarball."""
-    ret, output = utils.run_command(
-        ["tar", "-C", rootfs, "--exclude=./dev/*", "-zxf", archive, "--numeric-owner"]
-    )
-    if ret != 0:
-        raise exceptions.CommandError(f"Failed to unpack {archive}: {output}")
-    return ret
+    try:
+        subprocess.run(
+            [
+                "tar",
+                "-C",
+                rootfs,
+                "--exclude=./dev/*",
+                "-zxf",
+                archive,
+                "--numeric-owner",
+            ],
+            check=True,
+            capture_output=True,
+        )
+    except subprocess.CalledProcessError as e:
+        die(f"Failed to unpack {archive}: " + e.stderr.decode("utf-8").strip())
 
 
 def compress(archive, compressor="zstd"):
-    log.info(f"Compress {archive}.")
-
+    """Compress image by using the desired archive program."""
     if not os.path.exists(archive):
-        log.error(f"{archive} not found")
-        sys.exit(1)
+        die(f"{archive} not found.")
 
     ncpu = os.cpu_count()
     if compressor == "xz":
@@ -39,7 +46,11 @@ def compress(archive, compressor="zstd"):
     elif compressor == "zstd":
         cmd = f"zstd -3 --keep -f -T{ncpu} {archive}"
     else:
-        log.error(f"{compressor} not supported")
-        sys.exit(1)
+        die(f"{compressor} not supported")
 
-    return utils.run_command(cmd, shell=True)
+    try:
+        subprocess.run(shlex.split(cmd), check=True, capture_output=True)
+    except subprocess.CalledProcessError as e:
+        die(f"Failed to compress {archive}: " + e.stderr.decode("utf-8").strip())
+    except FileNotFoundError:
+        die(f"{cmd.split()[0]} is not found.")
