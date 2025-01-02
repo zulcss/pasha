@@ -10,7 +10,7 @@ import subprocess
 import sys
 import time
 
-from pasha import block, udev
+from pasha import loop, udev
 
 LOG = logging.getLogger(__name__)
 
@@ -28,7 +28,7 @@ class RunInTarget(object):
 
     def __enter__(self):
         """Create loopback device and mount it."""
-        self.device = block.create_loopback(self.image)
+        self.device = loop.create_loopback(self.image)
         udev.settle()
         try:
             self.mount()
@@ -38,7 +38,7 @@ class RunInTarget(object):
                 self.umount()
             except RuntimeError:
                 pass  # Ignore unmount issues, their expected
-            block.remove_loopback(self.device)
+            loop.remove_loopback(self.device)
             sys.exit(1)
         return self
 
@@ -48,9 +48,9 @@ class RunInTarget(object):
             self.umount()
         except RuntimeError as e:
             LOG.error(f"{e} Cleaning up and Exiting!!")
-            block.remove_loopback(self.device)
+            loop.remove_loopback(self.device)
             sys.exit(1)
-        block.remove_loopback(self.device)
+        loop.remove_loopback(self.device)
         udev.settle()
 
     def mount(self):

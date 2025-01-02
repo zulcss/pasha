@@ -37,8 +37,8 @@ class TestBootloader(base.TestCase):
 
     @mock.patch("os.path.exists")
     @mock.patch("subprocess.run")
-    @mock.patch("pasha.block.remove_loopback")
-    @mock.patch("pasha.block.create_loopback")
+    @mock.patch("pasha.loop.remove_loopback")
+    @mock.patch("pasha.loop.create_loopback")
     def test_grub_bootloader_x86(
         self, mock_createloop, mock_removeloop, mock_run, mock_os
     ):
@@ -82,8 +82,8 @@ class TestBootloader(base.TestCase):
 
     @mock.patch("os.path.exists")
     @mock.patch("subprocess.run")
-    @mock.patch("pasha.block.remove_loopback")
-    @mock.patch("pasha.block.create_loopback")
+    @mock.patch("pasha.loop.remove_loopback")
+    @mock.patch("pasha.loop.create_loopback")
     def test_grub_bootloader_arm64(
         self, mock_createloop, mock_removeloop, mock_run, mock_os
     ):
