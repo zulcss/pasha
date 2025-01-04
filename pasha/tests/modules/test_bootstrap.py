@@ -5,6 +5,7 @@ SPDX-License-Identifier: Apache-2.0
 
 """
 
+import os
 import pathlib
 import tempfile
 from unittest import mock
@@ -23,9 +24,12 @@ class TestBootstrapModule(base.TestCase):
         self.tempdir = pathlib.Path(tempfile.mkdtemp())
         self.state.workspace = self.tempdir
         self.config = OmegaConf.create({"name": "fake_name", "architecture": "amd64"})
-        self.stage = OmegaConf.create({"target": "fake_target", "suite": "bookworm"})
+        self.stage = OmegaConf.create(
+            {"target": "fake_target", "suite": "bookworm", "architecture": "amd64"}
+        )
+        self.cwd = os.path.join(os.getcwd(), "mmdebstrap.log")
 
-    @mock.patch("pasha.utils.run_command")
+    @mock.patch("subprocess.run")
     @mock.patch("shutil.which")
     def test_bootstrap(self, mock_which, mock_exec):
         rootfs = self.tempdir.joinpath("fake_name/rootfs")
@@ -35,24 +39,17 @@ class TestBootstrapModule(base.TestCase):
         bootstrap.Bootstrap(self.state, self.config, self.stage).run()
         mock_exec.assert_called_once_with(
             [
-                "/usr/bin/mmdebstrap",
-                "--architecture",
-                "amd64",
+                "mmdebstrap",
+                f"--logfile={self.cwd}",
+                "--architecture=amd64",
                 "--verbose",
                 "bookworm",
                 "fake_target",
-            ]
+            ],
+            check=True,
         )
 
-    @mock.patch("shutil.which")
-    def test_mmdebstrap_not_installed(self, mock_which):
-        rootfs = self.tempdir.joinpath("fake_name/rootfs")
-        rootfs.mkdir(parents=True, exist_ok=True)
-        mock_which.return_value = None
-        with pytest.raises(Exception):
-            bootstrap.Bootstrap(self.state, self.config, self.stage).run()
-
-    @mock.patch("pasha.utils.run_command")
+    @mock.patch("subprocess.run")
     @mock.patch("shutil.which")
     def test_bootstrap_with_extra_args(self, mock_which, mock_exec):
         rootfs = self.tempdir.joinpath("fake_name/rootfs")
@@ -63,6 +60,7 @@ class TestBootstrapModule(base.TestCase):
             {
                 "target": "fake_target",
                 "suite": "bookworm",
+                "architecture": "amd64",
                 "packages": ["ostree"],
                 "setup_hooks": ["sync-in overlay/debian/ /"],
             }
@@ -70,13 +68,14 @@ class TestBootstrapModule(base.TestCase):
         bootstrap.Bootstrap(self.state, self.config, stage).run()
         mock_exec.assert_called_once_with(
             [
-                "/usr/bin/mmdebstrap",
-                "--architecture",
-                "amd64",
+                "mmdebstrap",
+                f"--logfile={self.cwd}",
+                "--architecture=amd64",
                 "--verbose",
                 "--include=ostree",
                 "--setup-hook=sync-in overlay/debian/ /",
                 "bookworm",
                 "fake_target",
-            ]
+            ],
+            check=True,
         )
