@@ -1,32 +1,38 @@
 """
-Copyright (c) 2024 Wind River Systems, Inc.
+Copyright (c) 2024-2025 Wind River Systems, Inc.
 
 SPDX-License-Identifier: Apache-2.0
 
 """
 
-import time
+import contextlib
+import logging
+import subprocess
 
-from pasha import exceptions, udev, utils
-
-
-def mount(image, rootfs):
-    """Mount an image via systemd-dissect."""
-    (
-        ret,
-        output,
-    ) = utils.run_command(["systemd-dissect", "-m", image, rootfs])
-    if ret != 0:
-        raise exceptions.CommandError(f"Failed to mount {image} on {rootfs}: {output}")
-    udev.settle()
-    return ret
+from pasha.log import complete_step, die
 
 
-def umount(rootfs):
-    """Umount an image via systemd-dissect."""
-    ret, output = utils.run_command(["systemd-dissect", "-u", rootfs])
-    if ret != 0:
-        raise exceptions.CommandError(f"Failed to umount {rootfs}: {output}")
-    udev.settle()
-    time.sleep(2)
-    return ret
+@contextlib.contextmanager
+def mount_disk(disk, rootfs):
+    """Mount and unmount a disk.
+
+    :params disk: string, block device to mount.
+    :params rootfs; string, path to mount the block 
+                    device.
+    """
+    if disk is None:
+        yield None
+        return
+
+    logging.debug("Mounting image...")
+    subprocess.run(
+        ["systemd-dissect", "--mount", "--mkdir", disk, rootfs],
+        capture_output=True, check=True)
+
+    try:
+        yield
+    finally:
+        logging.debug("Umounting image...")
+        subprocess.run(
+            ["systemd-dissect", "--umount", rootfs],
+            capture_output=True, check=True)
