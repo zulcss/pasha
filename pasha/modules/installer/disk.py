@@ -7,12 +7,13 @@ SPDX-License-Identifier: Apache-2.0
 import contextlib
 import logging
 import os
+import pathlib
 import shlex
 import shutil
 import subprocess
-import sys
 
-from pasha import exceptions, utils
+import click
+
 from pasha.context import Context
 from pasha.log import complete_step, die
 from pasha.loop import attach_image_loopback
@@ -114,39 +115,32 @@ class Filesystem(ModuleBase):
         self.config = config
         self.stage = stage
 
-        self.logging = logging.getLogger(__name__)
+        self.context = Context(self.state, self.config, self.stage)
+        self.disk = self.context.params.disk
 
     def run(self):
-        self.logging.info("Running filesystems.")
+        with (
+            complete_step("Formatting file systems on disk"),
+            contextlib.ExitStack() as stack,
+        ):
+            disk = pathlib.Path(self.context.params.disk)
+            if disk.suffix == ".img" or disk.suffix == ".raw":
+                self.disk = stack.enter_context(attach_image_loopback(self.disk))
 
-        device = self.config.params.disk
-        if device:
-            cmd = f"partprobe {device}"
-            utils.run_command(cmd, shell=True)
+            for index, part in enumerate(self.context.stage.filesystems, start=1):
+                disk = self._get_partition_device(index, self.disk)
+                if not os.path.exists(disk):
+                    die(f"{disk} not found.")
+                label = part.get("label", None)
+                if label is None:
+                    die("Partition label is not specified.")
+                fs = part.get("fs", None)
+                if fs is None:
+                    die("Partition type is not specified.")
 
-            cmd = "udevadm settle"
-            utils.run_command(cmd, shell=True)
+                self.make_filesystem(disk, part["name"], label, fs)
 
-            filesystems = self.stage.get("filesystems")
-            if filesystems:
-                for index, part in enumerate(filesystems, start=1):
-                    fs = self._get_partition_device(index, device)
-                    if os.path.exists(fs):
-                        self._mkfs(fs, part.fs, part.label, part.name)
-                    else:
-                        self.logging.error(f"{fs} not found")
-                        sys.exit(1)
-        else:
-            raise Exception("Disk image is not specified.")
-
-    def _mkfs(self, fs, fs_type, label, name):
-        self.logging.info(f"Formatting filesystems for {name}.")
-
-        if fs_type == "vfat":
-            # vfat is a special case
-            utils.run_command(["mkfs.vfat", "-F", "32", "-n", label, fs])
-        else:
-            utils.run_command(["mkfs", "-F", "-t", fs_type, "-L", label, fs])
+        show_disk(self.context.params.disk)
 
     def _get_partition_device(self, number, device):
         """Get the partition device."""
@@ -162,3 +156,19 @@ class Filesystem(ModuleBase):
             return "%s%s%d" % (device, suffix, number)
         else:
             return "%s%d" % (device, number)
+
+    def make_filesystem(self, disk, part, label, fs):
+        """Format a file system onto disk slice."""
+        match fs:
+            case "vfat":
+                command = ["mkfs.vfat", "-F", "32", "-n", label, disk]
+            case "ext4" | "ext3":
+                command = ["mkfs", "-F", "-t", fs, "-L", label, disk]
+            case _:
+                die(f"{fs} is not a supported type.")
+
+        try:
+            logging.debug(f"Formatting {disk}, name={part}, label={label}, fs={fs}.")
+            subprocess.run(command, capture_output=True, check=True)
+        except subprocess.CalledProcessError as e:
+            die(f"Failed to format {disk}: " + e.stderr.decode("utf-8").strip())

@@ -128,3 +128,40 @@ class TestDiskPartition(base.TestCase):
         mock_which.return_value = True
         disk.Parted(self.state, self.config, self.stage).run()
         self.assertEqual(mock_run.call_args_list, expected_calls)
+
+
+class TestDiskFilesystem(base.TestCase):
+    def setUp(self):
+        super(TestDiskFilesystem, self).setUp()
+        self.state = mock.MagicMock()
+        self.tempdir = pathlib.Path(tempfile.mkdtemp())
+        self.state.workspace = self.tempdir
+        self.config = OmegaConf.create(
+            {
+                "name": "fake_name",
+                "architecture": "amd64",
+                "params": {
+                    "disk": "/dev/sda",
+                },
+            }
+        )
+        self.stage = OmegaConf.create(
+            {
+                "filesystems": [
+                    {"name": "EFI", "label": "EFI", "fs": "vfat", "options": []}
+                ]
+            }
+        )
+
+    @mock.patch("subprocess.run")
+    def test_create_filesysems_with_block(self, mock_run):
+        expected_calls = [
+            mock.call(
+                ["mkfs.vfat", "-F", "32", "-n", "EFI", "/dev/sda1"],
+                capture_output=True,
+                check=True,
+            ),
+            mock.call(["parted", "/dev/sda", "print"], check=True),
+        ]
+        disk.Filesystem(self.state, self.config, self.stage).run()
+        self.assertEqual(mock_run.call_args_list, expected_calls)
