@@ -35,7 +35,7 @@ class TestContainerBuildModule(base.TestCase):
     @mock.patch("os.path.exists")
     @mock.patch("shutil.which")
     @mock.patch("shutil.rmtree")
-    def test_container_bulid(
+    def test_container_build(
         self, mock_shutil, mock_which, mock_exists, mock_exec, mock_run
     ):
         mock_exec.return_value = (0, "")
