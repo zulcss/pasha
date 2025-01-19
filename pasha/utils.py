@@ -1,5 +1,5 @@
 """
-Copyright (c) 2024 Wind River Systems, Inc.
+Copyright (c) 2024-2025 Wind River Systems, Inc.
 
 SPDX-License-Identifier: Apache-2.0
 
@@ -11,6 +11,8 @@ import shutil
 import subprocess
 import sys
 from urllib.parse import urlparse
+
+from pasha.log import complete_step, die
 
 LOG = logging.getLogger(__name__)
 
@@ -66,6 +68,53 @@ def run_command(args, **kwargs):
         outputs += output
 
     return ret, outputs.rstrip("\n")
+
+
+class Chroot(object):
+    """Run a command in a chrootable target."""
+
+    def __init__(self, context, root):
+        self.context = context
+        self.root = root
+
+        self.cmd = ["bwrap", "--bind", self.root, "/"]
+
+        # vfs mounts
+        self.cmd += ["--proc", "/proc"]
+        self.cmd += ["--dev-bind", "/dev", "/dev"]
+        self.cmd += ["--bind", "/sys", "/sys"]
+
+        # fs mounts
+        self.cmd += ["--dir", "/run"]
+
+        # bwrap args
+        self.cmd += ["--share-net"]
+        self.cmd += ["--die-with-parent"]
+        self.cmd += ["--chdir", "/"]
+
+    def __enter__(self):
+        with complete_step("Setting up chroot target"):
+            resolv = self.root.joinpath("etc/resolv.conf")
+            if resolv.exists() or resolv.is_symlink():
+                # Use the host's /etc/resolv.conf
+                os.rename(resolv, self.root.joinpath("etc/resolv.conf.bak"))
+                self.cmd += ["--bind", "/etc/resolv.conf", "/etc/resolv.conf"]
+
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        with complete_step("Tearing down chroot target"):
+            resolv = self.root.joinpath("etc/resolv.conf.bak")
+            if resolv.exists():
+                os.rename(resolv, self.root.joinpath("etc/resolv.conf"))
+
+    def run(self, args, **kwargs):
+        """Run a command im a chrootable environment"""
+        try:
+            LOG.debug(f"Running {subprocess.list2cmdline(args)}.")
+            subprocess.run(self.cmd + args, check=True, **kwargs)
+        except subprocess.CalledProcessError as e:
+            die(f"Failed to run command: " + e.stderr.decode("utf-8").strip())
 
 
 def run_chroot_command(args, rootfs, efi=None, boot=None, **kwargs):
