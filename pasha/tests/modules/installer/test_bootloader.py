@@ -11,13 +11,62 @@ from unittest import mock
 
 from omegaconf import OmegaConf
 
-from pasha.modules.installer.bootloader import BootloaderGrub
+from pasha.modules.installer import bootloader
 from pasha.tests import base
 
 
-class TestBootloader(base.TestCase):
+class TestSDBootloader(base.TestCase):
     def setUp(self):
-        super(TestBootloader, self).setUp()
+        super(TestSDBootloader, self).setUp()
+        self.state = mock.MagicMock()
+        self.tempdir = pathlib.Path(tempfile.mkdtemp())
+        self.state.workspace = self.tempdir
+        self.config = OmegaConf.create(
+            {
+                "name": "fake_name",
+                "architecture": "amd64",
+                "params": {
+                    "disk": "fake_image.img",
+                },
+            }
+        )
+        self.stage = OmegaConf.create({"kernel_args": "fake_kernel_args"})
+
+    @mock.patch("subprocess.run")
+    @mock.patch("shutil.which")
+    @mock.patch("pasha.bootloader.install_systemd_boot")
+    @mock.patch("os.path.exists")
+    def test_sd_bootloader(self, mock_exists, mock_bootloader, mock_which, mock_run):
+        rootfs = self.tempdir.joinpath("fake_name/rootfs")
+        expected_calls = [
+            mock.call(
+                ["systemd-dissect", "--mount", "--mkdir", "fake_image.img", rootfs],
+                check=True,
+                capture_output=True,
+            ),
+            mock.call(
+                [
+                    "bootctl",
+                    "install",
+                    f"--root={rootfs}",
+                    "--no-variables",
+                    "--entry-token",
+                    "os-id",
+                ],
+                check=True,
+                capture_output=True,
+            ),
+            mock.call(
+                ["systemd-dissect", "--umount", rootfs], capture_output=True, check=True
+            ),
+        ]
+        bootloader.Bootloader(self.state, self.config, self.stage).run()
+        self.assertEqual(mock_run.call_args_list, expected_calls)
+
+
+class TestGrubBootloader(base.TestCase):
+    def setUp(self):
+        super(TestGrubBootloader, self).setUp()
         self.state = mock.MagicMock()
         self.tempdir = pathlib.Path(tempfile.mkdtemp())
         self.state.workspace = self.tempdir
@@ -77,7 +126,7 @@ class TestBootloader(base.TestCase):
             mock.call(["umount", "-l", rootfs], check=True),
             mock.call(["udevadm", "settle"], check=True),
         ]
-        BootloaderGrub(self.state, self.config, self.stage).run()
+        bootloader.BootloaderGrub(self.state, self.config, self.stage).run()
         self.assertEqual(mock_run.call_args_list, expected_calls)
 
     @mock.patch("os.path.exists")
@@ -136,5 +185,5 @@ class TestBootloader(base.TestCase):
             mock.call(["umount", "-l", rootfs], check=True),
             mock.call(["udevadm", "settle"], check=True),
         ]
-        BootloaderGrub(self.state, self.config, self.stage).run()
+        bootloader.BootloaderGrub(self.state, self.config, self.stage).run()
         self.assertEqual(mock_run.call_args_list, expected_calls)
