@@ -6,46 +6,32 @@ SPDX-License-Identifier: Apache-2.0
 
 import logging
 import os
+import shutil
 
-from pasha import utils
+from pasha.archive import unpack
+from pasha.context import Context
+from pasha.log import complete_step, die
 from pasha.modules.base import ModuleBase
-from pasha.mount import mount
+from pasha.mount import mount_disk
 
 
 class Unpack(ModuleBase):
-    """Module that uses parted to create partitions."""
+    """Unpack a tarball to a disk."""
 
     def __init__(self, state, config, stage):
         self.state = state
         self.config = config
         self.stage = stage
 
-        self.logging = logging.getLogger(__name__)
-        self.device = self.config.params.disk
-        self.source = self.config.params.source
-        self.rootfs = self.state.workspace.joinpath(f"{self.config.name}/rootfs")
+        self.context = Context(self.state, self.config, self.stage)
+
+        if not os.path.exists(self.context.params.source):
+            die(f"{self.context.params.source} is not found.")
+
+        if not os.path.exists(self.context.params.disk):
+            die(f"{self.context.params.disk} is not found.")
 
     def run(self):
-        self.logging.info("Unpacking source.")
-
-        if not os.path.exists(self.source):
-            raise Exception(f"Could not find {self.source}.")
-
-        if not self.rootfs.exists():
-            self.rootfs.mkdir(parents=True, exist_ok=True)
-
-        self.logging.info(f"Mounting {self.device} on {self.rootfs}.")
-        mount(self.device, self.rootfs)
-
-        self.logging.info(f"Unpacking {self.source}.")
-        utils.run_command(
-            [
-                "tar",
-                "-C",
-                self.rootfs,
-                "--exclude=./dev/*",
-                "-zxf",
-                self.source,
-                "--numeric-owner",
-            ]
-        )
+        with complete_step(f"Unpacking {self.context.params.source}"):
+            with mount_disk(self.context.params.disk, self.context.root):
+                unpack(self.context.params.source, self.context.root)
