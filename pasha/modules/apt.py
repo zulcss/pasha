@@ -1,13 +1,20 @@
 """
-Copyright (c) 2024 Wind River Systems, Inc.
+Copyright (c) 2024-2025 Wind River Systems, Inc.
 
 SPDX-License-Identifier: Apache-2.0
 """
 
 import logging
 
+from rich.console import Console
+
+from pasha.context import Context
+from pasha.log import complete_step
 from pasha.modules.base import ModuleBase
-from pasha.packages import Apt
+from pasha.mount import mount_disk
+from pasha.packages import run_apt_command
+
+console = Console()
 
 
 class AptBase(ModuleBase):
@@ -15,67 +22,38 @@ class AptBase(ModuleBase):
         self.state = state
         self.config = config
         self.stage = stage
-        self.logging = logging.getLogger(__name__)
-        self.apt = Apt(self.state, self.config)
 
-        self.rootfs = self.state.workspace.joinpath(f"{self.config.name}/rootfs")
+        self.context = Context(self.state, self.config, self.stage)
 
     def run(self):
         pass
 
 
-class AptClean(AptBase):
-    def run(self):
-        self.logging.info("Cleaning package database.")
-        if not self.rootfs.exists():
-            raise Exception("Unable to find rootfs.")
-
-        self.apt.clean()
-
-
 class AptRemove(AptBase):
     def run(self):
-        self.logging.info("Removing packages.")
-        if not self.rootfs.exists():
-            raise Exception("Unable to find rootfs.")
-        packages = self.stage.get("packages")
-        if packages is None:
-            raise Exception(f"Unable to remove {packages}")
-        self.apt.remove(packages)
+        with complete_step("Removing packages"):
+            with console.status("Removing packages."):
+                with mount_disk(self.context.params.disk, self.context.root):
+                    run_apt_command(
+                        "remove", self.context, packages=self.context.stage.packages
+                    )
 
 
 class AptUpdate(AptBase):
     def run(self):
-        self.logging.info("Updating package database")
-        if not self.rootfs.exists():
-            raise Exception("Unable to find rootfs.")
-        self.apt.refresh()
-
-
-class AptUpgrade(AptBase):
-    def run(self):
-        self.logging.info("Upgrading installed packages.")
-        if not self.rootfs.exists():
-            raise Exception("Unable to find rootfs.")
-
-        self.apt.upgrade()
-
-
-class AptDistUpgrade(AptBase):
-    def run(self):
-        self.logging.info("Running apt-get dist-upgrade.")
-        if not self.rootfs.exists():
-            raise Exception("Unable to find rootfs.")
-        self.apt.dist_upgrade()
+        with console.status("Updating package database"):
+            with mount_disk(self.context.params.disk, self.context.root):
+                run_apt_command("update", self.context)
 
 
 class AptInstall(AptBase):
     def run(self):
-        self.logging.info("Installing packages.")
-        if not self.rootfs.exists():
-            raise Exception("Unable to find rootfs.")
+        with complete_step("Installing packages"):
+            with mount_disk(self.context.params.disk, self.context.root):
+                with console.status("Updating apt cache."):
+                    run_apt_command("update", self.context)
 
-        packages = self.stage.get("packages")
-        if packages is None:
-            raise Exception("No package specified.")
-        self.apt.install(self.stage.packages)
+                with console.status("Installing packages."):
+                    run_apt_command(
+                        "install", self.context, packages=self.context.stage.packages
+                    )

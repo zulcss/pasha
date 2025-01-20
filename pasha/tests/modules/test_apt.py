@@ -22,236 +22,182 @@ class TestAptModule(base.TestCase):
         self.state = mock.MagicMock()
         self.tempdir = pathlib.Path(tempfile.mkdtemp())
         self.state.workspace = self.tempdir
-        self.config = OmegaConf.create({"name": "fake_name"})
-        self.stage = OmegaConf.create({"packages": ["foo"]})
-
-    @mock.patch("pasha.utils.run_command")
-    def test_apt_clean(self, mock_exec):
-        rootfs = self.tempdir.joinpath("fake_name/rootfs")
-        rootfs.mkdir(parents=True, exist_ok=True)
-        mock_exec.return_value = (0, "")
-        apt.AptClean(self.state, self.config, {}).run()
-        mock_exec.assert_called_once_with(
-            [
-                "bwrap",
-                "--bind",
-                rootfs,
-                "/",
-                "--proc",
-                "/proc",
-                "--dev-bind",
-                "/dev",
-                "/dev",
-                "--dir",
-                "/run",
-                "--bind",
-                "/sys",
-                "/sys",
-                "--dir",
-                "/run",
-                "--bind",
-                "/tmp",
-                "/tmp",
-                "--share-net",
-                "--die-with-parent",
-                "--chdir",
-                "/",
-                "apt-get",
-                "clean",
-            ]
+        self.config = OmegaConf.create(
+            {
+                "name": "fake_name",
+                "architecture": "amd64",
+                "params": {
+                    "disk": "/dev/sda",
+                },
+            }
         )
+        self.stage = OmegaConf.create({})
 
-    @mock.patch("pasha.utils.run_command")
+    @mock.patch("subprocess.run")
     @mock.patch.dict(os.environ, {}, clear=True)
-    def test_apt_remove(self, mock_exec):
+    def test_apt_update(self, mock_run):
+        rootfs = self.tempdir.joinpath("fake_name/rootfs")
+        expected_calls = [
+            mock.call(
+                ["systemd-dissect", "--mount", "--mkdir", "/dev/sda", rootfs],
+                check=True,
+                capture_output=True,
+            ),
+            mock.call(
+                [
+                    "bwrap",
+                    "--bind",
+                    rootfs,
+                    "/",
+                    "--proc",
+                    "/proc",
+                    "--dev-bind",
+                    "/dev",
+                    "/dev",
+                    "--bind",
+                    "/sys",
+                    "/sys",
+                    "--dir",
+                    "/run",
+                    "--share-net",
+                    "--die-with-parent",
+                    "--chdir",
+                    "/",
+                    "apt-get",
+                    "--assume-yes",
+                    "update",
+                ],
+                check=True,
+                env={"DEBIAN_FRONTEND": "noninteractive"},
+            ),
+            mock.call(
+                ["systemd-dissect", "--umount", rootfs], capture_output=True, check=True
+            ),
+        ]
         rootfs = self.tempdir.joinpath("fake_name/rootfs")
         rootfs.mkdir(parents=True, exist_ok=True)
-        mock_exec.return_value = (0, "")
-        apt.AptRemove(self.state, self.config, self.stage).run()
-        mock_exec.assert_called_once_with(
-            [
-                "bwrap",
-                "--bind",
-                rootfs,
-                "/",
-                "--proc",
-                "/proc",
-                "--dev-bind",
-                "/dev",
-                "/dev",
-                "--dir",
-                "/run",
-                "--bind",
-                "/sys",
-                "/sys",
-                "--dir",
-                "/run",
-                "--bind",
-                "/tmp",
-                "/tmp",
-                "--share-net",
-                "--die-with-parent",
-                "--chdir",
-                "/",
-                "apt-get",
-                "remove",
-                "-y",
-                "foo",
-            ],
-            env={"DEBIAN_FRONTEND": "noninteractive"},
-        )
+        apt.AptUpdate(self.state, self.config, self.stage).run()
+        self.assertEqual(mock_run.call_args_list, expected_calls)
 
-    @mock.patch("pasha.utils.run_command")
+    @mock.patch("subprocess.run")
     @mock.patch.dict(os.environ, {}, clear=True)
-    def test_apt_update(self, mock_exec):
+    def test_apt_remove(self, mock_run):
+        stage = OmegaConf.create({"packages": ["foo"]})
+        rootfs = self.tempdir.joinpath("fake_name/rootfs")
+        expected_calls = [
+            mock.call(
+                ["systemd-dissect", "--mount", "--mkdir", "/dev/sda", rootfs],
+                check=True,
+                capture_output=True,
+            ),
+            mock.call(
+                [
+                    "bwrap",
+                    "--bind",
+                    rootfs,
+                    "/",
+                    "--proc",
+                    "/proc",
+                    "--dev-bind",
+                    "/dev",
+                    "/dev",
+                    "--bind",
+                    "/sys",
+                    "/sys",
+                    "--dir",
+                    "/run",
+                    "--share-net",
+                    "--die-with-parent",
+                    "--chdir",
+                    "/",
+                    "apt-get",
+                    "--assume-yes",
+                    "remove",
+                    "foo",
+                ],
+                check=True,
+                env={"DEBIAN_FRONTEND": "noninteractive"},
+            ),
+            mock.call(
+                ["systemd-dissect", "--umount", rootfs], capture_output=True, check=True
+            ),
+        ]
         rootfs = self.tempdir.joinpath("fake_name/rootfs")
         rootfs.mkdir(parents=True, exist_ok=True)
-        mock_exec.return_value = (0, "")
-        apt.AptUpdate(self.state, self.config, {}).run()
-        mock_exec.assert_called_once_with(
-            [
-                "bwrap",
-                "--bind",
-                rootfs,
-                "/",
-                "--proc",
-                "/proc",
-                "--dev-bind",
-                "/dev",
-                "/dev",
-                "--dir",
-                "/run",
-                "--bind",
-                "/sys",
-                "/sys",
-                "--dir",
-                "/run",
-                "--bind",
-                "/tmp",
-                "/tmp",
-                "--share-net",
-                "--die-with-parent",
-                "--chdir",
-                "/",
-                "apt-get",
-                "update",
-            ]
-        )
+        apt.AptRemove(self.state, self.config, stage).run()
+        self.assertEqual(mock_run.call_args_list, expected_calls)
 
-    @mock.patch("pasha.utils.run_command")
+    @mock.patch("subprocess.run")
     @mock.patch.dict(os.environ, {}, clear=True)
-    def test_apt_upgrade(self, mock_exec):
+    def test_apt_install(self, mock_run):
+        stage = OmegaConf.create({"packages": ["foo"]})
+        rootfs = self.tempdir.joinpath("fake_name/rootfs")
+        expected_calls = [
+            mock.call(
+                ["systemd-dissect", "--mount", "--mkdir", "/dev/sda", rootfs],
+                check=True,
+                capture_output=True,
+            ),
+            mock.call(
+                [
+                    "bwrap",
+                    "--bind",
+                    rootfs,
+                    "/",
+                    "--proc",
+                    "/proc",
+                    "--dev-bind",
+                    "/dev",
+                    "/dev",
+                    "--bind",
+                    "/sys",
+                    "/sys",
+                    "--dir",
+                    "/run",
+                    "--share-net",
+                    "--die-with-parent",
+                    "--chdir",
+                    "/",
+                    "apt-get",
+                    "--assume-yes",
+                    "update",
+                ],
+                check=True,
+                env={"DEBIAN_FRONTEND": "noninteractive"},
+            ),
+            mock.call(
+                [
+                    "bwrap",
+                    "--bind",
+                    rootfs,
+                    "/",
+                    "--proc",
+                    "/proc",
+                    "--dev-bind",
+                    "/dev",
+                    "/dev",
+                    "--bind",
+                    "/sys",
+                    "/sys",
+                    "--dir",
+                    "/run",
+                    "--share-net",
+                    "--die-with-parent",
+                    "--chdir",
+                    "/",
+                    "apt-get",
+                    "--assume-yes",
+                    "install",
+                    "foo",
+                ],
+                check=True,
+                env={"DEBIAN_FRONTEND": "noninteractive"},
+            ),
+            mock.call(
+                ["systemd-dissect", "--umount", rootfs], capture_output=True, check=True
+            ),
+        ]
         rootfs = self.tempdir.joinpath("fake_name/rootfs")
         rootfs.mkdir(parents=True, exist_ok=True)
-        mock_exec.return_value = (0, "")
-        apt.AptUpgrade(self.state, self.config, {}).run()
-        mock_exec.assert_called_once_with(
-            [
-                "bwrap",
-                "--bind",
-                rootfs,
-                "/",
-                "--proc",
-                "/proc",
-                "--dev-bind",
-                "/dev",
-                "/dev",
-                "--dir",
-                "/run",
-                "--bind",
-                "/sys",
-                "/sys",
-                "--dir",
-                "/run",
-                "--bind",
-                "/tmp",
-                "/tmp",
-                "--share-net",
-                "--die-with-parent",
-                "--chdir",
-                "/",
-                "apt-get",
-                "upgrade",
-                "-y",
-            ],
-            env={"DEBIAN_FRONTEND": "noninteractive"},
-        )
-
-    @mock.patch("pasha.utils.run_command")
-    @mock.patch.dict(os.environ, {}, clear=True)
-    def test_apt_dist_upgrade(self, mock_exec):
-        rootfs = self.tempdir.joinpath("fake_name/rootfs")
-        rootfs.mkdir(parents=True, exist_ok=True)
-        mock_exec.return_value = (0, "")
-        apt.AptDistUpgrade(self.state, self.config, {}).run()
-        mock_exec.assert_called_once_with(
-            [
-                "bwrap",
-                "--bind",
-                rootfs,
-                "/",
-                "--proc",
-                "/proc",
-                "--dev-bind",
-                "/dev",
-                "/dev",
-                "--dir",
-                "/run",
-                "--bind",
-                "/sys",
-                "/sys",
-                "--dir",
-                "/run",
-                "--bind",
-                "/tmp",
-                "/tmp",
-                "--share-net",
-                "--die-with-parent",
-                "--chdir",
-                "/",
-                "apt-get",
-                "dist-upgrade",
-                "-y",
-            ],
-            env={"DEBIAN_FRONTEND": "noninteractive"},
-        )
-
-    @mock.patch("pasha.utils.run_command")
-    @mock.patch.dict(os.environ, {}, clear=True)
-    def test_apt_install(self, mock_exec):
-        rootfs = self.tempdir.joinpath("fake_name/rootfs")
-        rootfs.mkdir(parents=True, exist_ok=True)
-        mock_exec.return_value = (0, "")
-        apt.AptInstall(self.state, self.config, self.stage).run()
-        mock_exec.assert_called_once_with(
-            [
-                "bwrap",
-                "--bind",
-                rootfs,
-                "/",
-                "--proc",
-                "/proc",
-                "--dev-bind",
-                "/dev",
-                "/dev",
-                "--dir",
-                "/run",
-                "--bind",
-                "/sys",
-                "/sys",
-                "--dir",
-                "/run",
-                "--bind",
-                "/tmp",
-                "/tmp",
-                "--share-net",
-                "--die-with-parent",
-                "--chdir",
-                "/",
-                "apt-get",
-                "install",
-                "-y",
-                "foo",
-            ],
-            env={"DEBIAN_FRONTEND": "noninteractive"},
-        )
+        apt.AptInstall(self.state, self.config, stage).run()
+        self.assertEqual(mock_run.call_args_list, expected_calls)
