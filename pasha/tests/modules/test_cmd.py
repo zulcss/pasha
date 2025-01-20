@@ -1,5 +1,5 @@
 """
-Copyright (c) 2024 Wind River Systems, Inc.
+Copyright (c) 2024-2025 Wind River Systems, Inc.
 
 SPDX-License-Identifier: Apache-2.0
 
@@ -21,12 +21,32 @@ class TestShellCommand(base.TestCase):
         self.state = mock.MagicMock()
         self.tempdir = pathlib.Path(tempfile.mkdtemp())
         self.state.workspace = self.tempdir
-        self.conf = OmegaConf.create({"name": "fake_name"})
+        self.config = OmegaConf.create(
+            {
+                "name": "fake_name",
+                "architecture": "amd64",
+                "params": {
+                    "disk": "/dev/sda",
+                },
+            }
+        )
         self.stage = OmegaConf.create({"commands": ["pwd", "ls -lh"]})
 
-    @mock.patch("pasha.utils.run_command")
+    @mock.patch("subprocess.run")
     def test_run_shell(self, mock_exec):
         rootfs = self.tempdir.joinpath("fake_name/rootfs")
+        expected_calls = [
+            mock.call(
+                ["systemd-dissect", "--mount", "--mkdir", "/dev/sda", rootfs],
+                check=True,
+                capture_output=True,
+            ),
+            mock.call("pwd", shell=True),
+            mock.call("ls -lh", shell=True),
+            mock.call(
+                ["systemd-dissect", "--umount", rootfs], capture_output=True, check=True
+            ),
+        ]
         rootfs.mkdir(parents=True, exist_ok=True)
-        mock_exec.return_value = (0, "")
-        cmd.ShellCommand(self.state, self.conf, {}).run()
+        cmd.ShellCommand(self.state, self.config, self.stage).run()
+        self.assertEqual(mock_exec.call_args_list, expected_calls)
