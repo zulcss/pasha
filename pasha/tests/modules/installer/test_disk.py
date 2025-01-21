@@ -154,7 +154,8 @@ class TestDiskFilesystem(base.TestCase):
         )
 
     @mock.patch("subprocess.run")
-    def test_create_filesysems_with_block(self, mock_run):
+    @mock.patch("os.path.exists")
+    def test_create_filesysems_with_block(self, mock_exist, mock_run):
         expected_calls = [
             mock.call(
                 ["mkfs.vfat", "-F", "32", "-n", "EFI", "/dev/sda1"],

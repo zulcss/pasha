@@ -39,7 +39,8 @@ class TestOstree(base.TestCase):
         self.stage = OmegaConf.create({})
 
     @mock.patch("subprocess.run")
-    def test_ostree_init(self, mock_run):
+    @mock.patch("shutil.which")
+    def test_ostree_init(self, mock_which, mock_run):
         expected_calls = [
             mock.call(
                 ["ostree", "init", "--repo=fake_path", "--mode=bare"],
