@@ -23,8 +23,8 @@ class CompressImage(ModuleBase):
         self.compressor = self.context.stage.get("compression", "zstd")
 
     def run(self):
-        with complete_step(f"Compressing {self.context.params.image}."):
-            if not os.path.exists(self.context.params.image):
-                die(f"{self.context.params.image} not found")
+        with complete_step(f"Compressing {self.context.params.disk}."):
+            if not os.path.exists(self.context.params.disk):
+                die(f"{self.context.params.disk} not found")
 
-            compress(self.context.params.image, compressor=self.compressor)
+            compress(self.context.params.disk, compressor=self.compressor)
