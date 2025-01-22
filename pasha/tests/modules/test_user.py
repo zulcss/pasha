@@ -26,9 +26,9 @@ class TestUnDeploy(base.TestCase):
             {"user": "fake_user", "passwd": "fake_pass", "groups": ["sudo"]}
         )
 
-    @mock.patch("pasha.utils.run_chroot_command")
-    def test_create_user(self, mock_exec):
+    @mock.patch("pasha.utils.Chroot.run")
+    def test_create_user(self, mock_run):
         rootfs = self.tempdir.joinpath("fake_name/rootfs")
+        expected_calls = []
         rootfs.mkdir(parents=True, exist_ok=True)
-        mock_exec.return_value = (0, "")
         user.User(self.state, self.conf, {}).run()

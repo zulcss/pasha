@@ -7,6 +7,8 @@ SPDX-License-Identifier: Apache-2.0
 import logging
 
 from pasha import utils
+from pasha.context import Context
+from pasha.log import complete_step
 from pasha.modules.base import ModuleBase
 
 
@@ -15,23 +17,28 @@ class User(ModuleBase):
         self.state = state
         self.config = config
         self.stage = stage
-        self.rootfs = self.state.workspace.joinpath(f"{self.config.name}/rootfs")
-        self.logging = logging.getLogger(__name__)
+
+        self.context = Context(self.state, self.config, self.stage)
 
     def run(self):
         cmd = []
-        username = self.stage.get("name")
-        if username:
-            self.logging.info(f"Adding {username}.")
+        username = self.stage.get("name", None)
+        if username is None:
+            return
+        passwd = self.stage.get("passwd")
+        if passwd:
+            cmd += ["--password", passwd]
+        groups = self.stage.get("groups")
+        if groups:
+            cmd += ["--groups", ",".join(groups)]
+
+        cmd += ["--create-home"]
+        cmd += ["--home", f"/home/{username}"]
+        cmd += ["--shell", "/bin/bash"]
+
+        with complete_step(f"Adding {username}"):
             passwd = self.stage.get("passwd")
-            if passwd:
-                cmd += ["--password", passwd]
             groups = self.stage.get("groups")
-            if groups:
-                cmd += ["--groups", ",".join(groups)]
 
-            cmd += ["--create-home"]
-            cmd += ["--home", f"/home/{username}"]
-            cmd += ["--shell", "/bin/bash"]
-
-            utils.run_chroot_command(["useradd", *cmd, username], self.rootfs)
+            with utils.Chroot(sef.context, self.context.root) as chroot:
+                chroot.run(["useradd", *cmd, username])
