@@ -117,44 +117,6 @@ class Chroot(object):
             die(f"Failed to run command: " + e.stderr.decode("utf-8").strip())
 
 
-def run_chroot_command(args, rootfs, efi=None, boot=None, **kwargs):
-    """Run bubblewarap in a new namespace."""
-    cmd = [
-        "bwrap",
-        "--bind",
-        rootfs,
-        "/",
-        "--proc",
-        "/proc",
-        "--dev-bind",
-        "/dev",
-        "/dev",
-        "--dir",
-        "/run",
-        "--bind",
-        "/sys",
-        "/sys",
-        "--dir",
-        "/run",
-        "--bind",
-        "/tmp",
-        "/tmp",
-        "--share-net",
-        "--die-with-parent",
-        "--chdir",
-        "/",
-    ]
-
-    if boot:
-        cmd += ["--bind", f"{boot}/boot", "/boot"]
-
-    if efi:
-        cmd += ["--bind", f"{efi}/efi", "/efi"]
-
-    cmd += args
-    return run_command(cmd, **kwargs)
-
-
 def fetch(source):
     """Fetch a file from a specific site."""
     a = urlparse(source)
