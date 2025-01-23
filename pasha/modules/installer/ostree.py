@@ -72,10 +72,7 @@ class OstreePullLocal(OstreeBase):
                     f"ostree summary -u --repo={repo}", shell=True, check=True
                 )
             except subprocess.CalledProcessError as e:
-                die(
-                    f"Failed to pull from local repo:"
-                    + e.stderr.decode("utf-8").strip()
-                )
+                die(f"Failed to pull: " + e.stderr.decode("utf-8").strip())
 
 
 class OstreePullRemote(OstreeBase):
@@ -114,10 +111,7 @@ class OstreePullRemote(OstreeBase):
                         f"ostree summary -u --repo={repo}", shell=True, check=True
                     )
                 except subprocess.CalledProcessError as e:
-                    die(
-                        f"Failed to pull from remote repo:"
-                        + e.stderr.decode("utf-8").strip()
-                    )
+                    die(f"Failed to pull: " + e.stderr.decode("utf-8").strip())
 
 
 class OstreeDeploy(OstreeBase):
