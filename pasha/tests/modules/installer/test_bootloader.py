@@ -76,9 +76,7 @@ class TestGrubBootloader(base.TestCase):
                 "architecture": "amd64",
                 "params": {
                     "image": "fake_image.img",
-                    "mounts": [
-                        {"name": "root", "label": "ROOT", "target": "/", "fs": "ext4"}
-                    ],
+                    "disk": "/dev/sda",
                 },
             }
         )
@@ -86,104 +84,98 @@ class TestGrubBootloader(base.TestCase):
 
     @mock.patch("os.path.exists")
     @mock.patch("subprocess.run")
-    @mock.patch("pasha.loop.remove_loopback")
-    @mock.patch("pasha.loop.create_loopback")
-    def test_grub_bootloader_x86(
-        self, mock_createloop, mock_removeloop, mock_run, mock_os
-    ):
+    @mock.patch("json.loads")
+    def test_grub_bootloader_x86(self, mock_json, mock_run, mock_os):
         rootfs = self.state.workspace.joinpath("fake_name/rootfs")
         mock_os.return_value = True
-        mock_createloop.return_value = "/dev/loop0"
         expected_calls = [
-            mock.call(["udevadm", "settle"], check=True),
             mock.call(
-                ["mount", "-t", "ext4", "/dev/disk/by-partlabel/ROOT", rootfs],
+                ["systemd-dissect", "--json", "pretty", "/dev/sda"],
+                check=True,
+                capture_output=True,
+                encoding="utf8",
+            ),
+            mock.call(
+                ["mount", "-o", "bind", "/dev", str(rootfs.joinpath("dev"))], check=True
+            ),
+            mock.call(
+                ["mount", "-o", "bind", "/proc", str(rootfs.joinpath("proc"))],
                 check=True,
             ),
             mock.call(
-                ["mount", "-o", "bind", "/dev", rootfs.joinpath("dev")], check=True
+                ["mount", "-o", "bind", "/sys", str(rootfs.joinpath("sys"))], check=True
             ),
-            mock.call(
-                ["mount", "-o", "bind", "/proc", rootfs.joinpath("proc")], check=True
-            ),
-            mock.call(
-                ["mount", "-o", "bind", "/sys", rootfs.joinpath("sys")], check=True
-            ),
-            mock.call(["chroot", rootfs, "update-grub"], check=True),
+            mock.call(["chroot", rootfs, "update-grub"]),
             mock.call(
                 [
                     "chroot",
                     rootfs,
                     "grub-install",
                     "--uefi-secure-boot",
+                    "--efi-directory=/efi",
                     "--target=x86_64-efi",
                     "--no-nvram",
                     "--removable",
                 ],
                 check=True,
             ),
-            mock.call(["chroot", rootfs, "update-grub"], check=True),
-            mock.call(["umount", "-l", rootfs], check=True),
-            mock.call(["udevadm", "settle"], check=True),
+            mock.call(["umount", rootfs.joinpath("sys")], check=False),
+            mock.call(["umount", rootfs.joinpath("proc")], check=False),
+            mock.call(["umount", rootfs.joinpath("dev")], check=False),
         ]
         bootloader.BootloaderGrub(self.state, self.config, self.stage).run()
         self.assertEqual(mock_run.call_args_list, expected_calls)
 
     @mock.patch("os.path.exists")
     @mock.patch("subprocess.run")
-    @mock.patch("pasha.loop.remove_loopback")
-    @mock.patch("pasha.loop.create_loopback")
-    def test_grub_bootloader_arm64(
-        self, mock_createloop, mock_removeloop, mock_run, mock_os
-    ):
+    @mock.patch("json.loads")
+    def test_grub_bootloader_arm64(self, mock_json, mock_run, mock_os):
         self.config = OmegaConf.create(
             {
                 "name": "fake_name",
                 "architecture": "arm64",
                 "params": {
-                    "image": "fake_image.img",
-                    "mounts": [
-                        {"name": "root", "label": "ROOT", "target": "/", "fs": "ext4"}
-                    ],
+                    "disk": "/dev/sda",
                 },
             }
         )
         self.stage = OmegaConf.create({})
-
         rootfs = self.state.workspace.joinpath("fake_name/rootfs")
         mock_os.return_value = True
-        mock_createloop.return_value = "/dev/loop0"
         expected_calls = [
-            mock.call(["udevadm", "settle"], check=True),
             mock.call(
-                ["mount", "-t", "ext4", "/dev/disk/by-partlabel/ROOT", rootfs],
+                ["systemd-dissect", "--json", "pretty", "/dev/sda"],
+                check=True,
+                capture_output=True,
+                encoding="utf8",
+            ),
+            mock.call(
+                ["mount", "-o", "bind", "/dev", str(rootfs.joinpath("dev"))], check=True
+            ),
+            mock.call(
+                ["mount", "-o", "bind", "/proc", str(rootfs.joinpath("proc"))],
                 check=True,
             ),
             mock.call(
-                ["mount", "-o", "bind", "/dev", rootfs.joinpath("dev")], check=True
+                ["mount", "-o", "bind", "/sys", str(rootfs.joinpath("sys"))], check=True
             ),
-            mock.call(
-                ["mount", "-o", "bind", "/proc", rootfs.joinpath("proc")], check=True
-            ),
-            mock.call(
-                ["mount", "-o", "bind", "/sys", rootfs.joinpath("sys")], check=True
-            ),
-            mock.call(["chroot", rootfs, "update-grub"], check=True),
+            mock.call(["chroot", rootfs, "update-grub"]),
             mock.call(
                 [
                     "chroot",
                     rootfs,
                     "grub-install",
                     "--uefi-secure-boot",
+                    "--efi-directory=/efi",
                     "--target=arm64-efi",
                     "--no-nvram",
                     "--removable",
                 ],
                 check=True,
             ),
-            mock.call(["chroot", rootfs, "update-grub"], check=True),
-            mock.call(["umount", "-l", rootfs], check=True),
-            mock.call(["udevadm", "settle"], check=True),
+            mock.call(["umount", rootfs.joinpath("sys")], check=False),
+            mock.call(["umount", rootfs.joinpath("proc")], check=False),
+            mock.call(["umount", rootfs.joinpath("dev")], check=False),
         ]
         bootloader.BootloaderGrub(self.state, self.config, self.stage).run()
         self.assertEqual(mock_run.call_args_list, expected_calls)

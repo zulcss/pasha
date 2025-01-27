@@ -4,18 +4,21 @@ Copyright (c) 2024-2025 Wind River Systems, Inc.
 SPDX-License-Identifier: Apache-2.0
 """
 
+import contextlib
+import json
 import logging
 import os
+import pathlib
 import shutil
 import subprocess
 import sys
 
-from pasha import exceptions, target, utils
+from pasha import exceptions, loop, utils
 from pasha.bootloader import install_systemd_boot
 from pasha.context import Context
 from pasha.log import complete_step, die
 from pasha.modules.base import ModuleBase
-from pasha.mount import mount_disk
+from pasha.mount import bind_mounts, mount_disk, mount_partition
 from pasha.ostree import ostree_ref
 
 
@@ -127,37 +130,57 @@ class BootloaderGrub(ModuleBase):
         self.config = config
         self.stage = stage
 
-        self.logging = logging.getLogger(__name__)
-        self.mounts = self.config.params.get("mounts", None)
-        self.device = self.config.params.get("image", None)
-        self.rootfs = self.state.workspace.joinpath(f"{self.config.name}/rootfs")
+        self.context = Context(self.state, self.config, self.stage)
+        self.disk = self.context.params.disk
+        if not os.path.exists(self.disk):
+            die(f"{self.disk} is not found.")
 
     def run(self):
-        self.logging.info("Setting up grub bootloader")
+        with (
+            complete_step("Setting up chroot target"),
+            contextlib.ExitStack() as stack,
+        ):
+            disk = pathlib.Path(self.context.params.disk)
+            if disk.suffix == ".img" or disk.suffix == ".raw":
+                self.disk = stack.enter_context(loop.attach_image_loopback(self.disk))
 
-        if self.device is None:
-            raise exceptions.ConfigError("Disk is not specified.")
-        if not os.path.exists(self.device):
-            raise exceptions.ConfigError(f"{self.device} is not found.")
-
-        try:
-            with target.RunInTarget(
-                image=self.config.params.image, rootfs=self.rootfs, mounts=self.mounts
-            ) as chroot:
-                arch = "x86_64-efi"
-                if self.config.architecture == "arm64":
-                    arch = "arm64-efi"
-                chroot.run(["update-grub"])
-                chroot.run(
-                    [
-                        "grub-install",
-                        "--uefi-secure-boot",
-                        f"--target={arch}",
-                        "--no-nvram",
-                        "--removable",
-                    ]
-                )
-                chroot.run(["update-grub"])
-        except RuntimeError:
-            self.logging.error("Unable to run all commands. Exiting!!")
-            sys.exit(1)
+            self.context.root.mkdir(parents=True, exist_ok=True)
+            mounts = subprocess.run(
+                ["systemd-dissect", "--json", "pretty", self.disk],
+                check=True,
+                capture_output=True,
+                encoding="utf8",
+            )
+            mounts = json.loads(mounts.stdout)["mounts"]
+            for mount in mounts:
+                designator = mount["designator"]
+                match designator:
+                    case "root":
+                        logging.debug("Mounting root")
+                        self.context.root.mkdir(parents=True, exist_ok=True)
+                        stack.enter_context(
+                            mount_partition(
+                                mount["node"], mount["fstype"], self.context.root
+                            )
+                        )
+                    case "esp":
+                        logging.debug("Mounting esp")
+                        efi = self.context.root.joinpath("efi")
+                        efi.mkdir(parents=True, exist_ok=True)
+                        stack.enter_context(
+                            mount_partition(mount["node"], mount["fstype"], efi)
+                        )
+            arch = "x86_64-efi"
+            if self.context.config.architecture == "arm64":
+                arch = "arm64-efi"
+            with bind_mounts(["dev", "proc", "sys"], self.context.root):
+                subprocess.run(["chroot", self.context.root, "update-grub"])
+                cmd = [
+                    "grub-install",
+                    "--uefi-secure-boot",
+                    "--efi-directory=/efi",
+                    f"--target={arch}",
+                    "--no-nvram",
+                    "--removable",
+                ]
+                subprocess.run(["chroot", self.context.root] + cmd, check=True)
