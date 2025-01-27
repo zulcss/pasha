@@ -7,10 +7,10 @@ SPDX-License-Identifier: Apache-2.0
 import logging
 import os
 import shutil
-import tempfile
+import subprocess
 
-from pasha import utils
 from pasha.archive import unpack
+from pasha.context import Context
 from pasha.modules.base import ModuleBase
 
 
@@ -20,34 +20,27 @@ class Container(ModuleBase):
         self.config = config
         self.stage = stage
 
-        self.logging = logging.getLogger(__name__)
-
-    def run(self):
-        source = self.config.params.get("source", None)
-        if source is None:
-            raise ValueError(f"Container source not specified: '{source}'")
-        if not os.path.exists(source):
-            raise Exception(f"'{source}' does not exist")
-
-        image = self.stage.get("image", None)
-        if image is None:
-            raise ValueError(f"Container image not specified: '{image}'")
-        image_name = image.split(":")[0]
+        self.context = Context(self.state, self.config, self.stage)
+        self.source = self.context.config.params.source
+        self.image = self.context.stage.image
 
         if not shutil.which("umoci"):
             raise Exception("umoci is not installed.")
 
+        if not os.path.exists(self.source):
+            raise Exception(f"'{self.source}' does not exist")
+
+    def run(self):
+        image_name = self.image.split(":")[0]
+
         if os.path.exists(image_name):
             shutil.rmtree(image_name)
 
-        utils.run_command(f"umoci init --layout {image_name}", shell=True)
+        subprocess.run(f"umoci init --layout {image_name}", shell=True)
 
-        with tempfile.TemporaryDirectory() as tmpdir:
-            archive_dir = os.path.join(tmpdir, "root")
-            os.makedirs(archive_dir)
-            unpack(source, archive_dir)
+        unpack(self.source, self.context.root)
 
-            utils.run_command(f"umoci new --image {image_name}", shell=True)
-            utils.run_command(
-                f"umoci insert --image {image} {archive_dir} /", shell=True
-            )
+        subprocess.run(f"umoci new --image {image_name}", shell=True)
+        subprocess.run(
+            f"umoci insert --image {self.image} {self.context.root} /", shell=True
+        )

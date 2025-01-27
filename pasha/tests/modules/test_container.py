@@ -31,15 +31,28 @@ class TestContainerBuildModule(base.TestCase):
         self.stage = OmegaConf.create({"image": "fake_image:latest"})
 
     @mock.patch("subprocess.run")
-    @mock.patch("pasha.utils.run_command")
-    @mock.patch("os.path.exists")
     @mock.patch("shutil.which")
+    @mock.patch("os.path.exists")
     @mock.patch("shutil.rmtree")
-    def test_container_build(
-        self, mock_shutil, mock_which, mock_exists, mock_exec, mock_run
-    ):
-        mock_exec.return_value = (0, "")
-        mock_exists.return_value = True
-        mock_shutil.return_value = True
+    def test_container_build(self, mock_tree, mock_path, mock_which, mock_run):
+        rootfs = self.state.workspace.joinpath("fake_name/rootfs")
+        expected_calls = [
+            mock.call("umoci init --layout fake_image", shell=True),
+            mock.call(
+                [
+                    "tar",
+                    "-C",
+                    rootfs,
+                    "--exclude=./dev/*",
+                    "-zxf",
+                    "rootfs.tar.gz",
+                    "--numeric-owner",
+                ],
+                check=True,
+                capture_output=True,
+            ),
+            mock.call("umoci new --image fake_image", shell=True),
+            mock.call(f"umoci insert --image fake_image:latest {rootfs} /", shell=True),
+        ]
         container.Container(self.state, self.config, self.stage).run()
-        self.assertEqual(mock_exec.call_count, 3)
+        self.assertEqual(mock_run.call_args_list, expected_calls)
