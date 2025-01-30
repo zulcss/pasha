@@ -1,3 +1,26 @@
+pasha (0.1.14) unstable; urgency=medium
+
+  * New upstream release:
+    - 36314e: Add arm64 support for grub bootloader.
+    - fbd0e9: Avoid exiting immediately on failures in order to do cleanup first.
+    - ac3e0a: target.py: add retry for finding partitions by label.
+    - e37c55: target.py: fixup typos.
+    - 3963cc: CI: enable running forked repo merge requests in the parent project.
+    - 19a016: bootloader.py: fix CI code checks.
+    - da042b: target.py: ensure udevadm ops settle after loopback disconnect.
+    - 64f5b5: target.py: use correct variable name.
+    - 4c7303: housekeeping: fix 'deivce' typos.
+    - 1dafe4: Fix unused import warnings reported py pyflake8.
+    - 263064: Fix pyflake warnings about missing imports.
+    - 472201: Fix unused f-string.
+    - 6da4b4: Fix unused variable warnings in pyflake.
+    - 36b408: Rename test method.
+    - 19548c: Add missing copyright header.
+    - 668c2a: Correct module name for bootstrap.
+
+
+ -- Chuck Short <charles.short@windriver.com>  Thu, 30 Jan 2025 14:02:55 -0500
+
 pasha (0.1.13) unstable; urgency=medium
 
   * New upstream release:
