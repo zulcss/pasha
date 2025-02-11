@@ -1,3 +1,18 @@
+pasha (1.0.0) unstable; urgency=medium
+
+  * New upstream release:
+    - e2baf632: Add systemd-repart module to partition disks
+    - 6a008fab: Fix: Restore /etc/resolv.conf symlink correctly in chroot environments.
+    - 45cfd169: Fix defect in command module
+    - 14d08536: Fix spelling typos
+    - 9e00608c: Add trivy vulnerability scanner
+    - aedcfaf1: ostree: create home directory in /sysroot manually
+    - c77fbe73: Re-add dropped uefi flag
+    - 874269ad: Fix missing dtb directory
+    - 7126c1f0: Fix tracebacks while running efibootmgr module
+
+ -- Chuck Short <charles.short@windriver.com>  Fri, 11 Apr 2025 08:49:05 -0400
+
 pasha (0.1.13) unstable; urgency=medium
 
   * New upstream release:
