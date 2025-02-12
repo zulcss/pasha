@@ -22,8 +22,8 @@ class BootOrder(ModuleBase):
 
         self.context = Context(self.state, self.config, self.stage)
 
-        if not shutil.which(self.cmd):
-            die(f"{self.cmd} is not installed.")
+        if not shutil.which("efibootmgr"):
+            die(f"efibootmgr is not installed.")
 
     def run(self):
         with complete_step("Running efibootmgr."):
@@ -43,7 +43,7 @@ class BootOrder(ModuleBase):
                 oldbootname = line.split("*")[1]
                 oldbootname = oldbootname.strip()
                 # Remove existing old boot entry
-                if oldbootname == self.name:
+                if oldbootname == name:
                     cmd = f"efibootmgr -b {oldbootnum} -B >/dev/null 2>&1"
                     subprocess.run(cmd, shell=True)
 
