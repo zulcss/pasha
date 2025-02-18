@@ -118,8 +118,26 @@ class BootloaderOstree(ModuleBase):
                                 self.context.root.joinpath("efi"),
                             ],
                         ]
+
                         for cmd in grub_cmds:
                             subprocess.run(cmd, check=True)
+
+                        # Copy device tree binaries.
+                        for d in self.context.root.glob("boot/ostree/elxr-*"):
+                            elxr_dir = d.name.removeprefix("elxr-")
+
+                        dtb_dir = self.context.root.joinpath(
+                            f"boot/ostree/elxr-{elxr_dir}/dtb"
+                        )
+                        if dtb_dir.exists():
+                            subprocess.run(
+                                [
+                                    "cp",
+                                    "-rf",
+                                    dtb_dir,
+                                    self.context.root.joinpath("efi"),
+                                ]
+                            )
                     case _:
                         die(f"{self.uefi} is not a supported type.")
 
