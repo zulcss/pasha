@@ -31,6 +31,7 @@ class Bootloader(ModuleBase):
         self.context = Context(self.state, self.config, self.stage)
 
         self.kernel_args = self.context.stage.kernel_args
+        self.uefi = self.context.stage.get("uefi", "systemd-boot")
         self.uefi_driver = self.context.stage.get("uefi_driver", None)
 
         if not os.path.exists(self.context.params.disk):
@@ -41,13 +42,33 @@ class Bootloader(ModuleBase):
             with mount_disk(self.context.params.disk, self.context.root):
                 install_systemd_boot(self.context)
 
-                if self.uefi_driver == "ext4":
-                    logging.info("Install ext4 file system driver for UEFI.")
-                    shutil.copytree(
-                        self.context.root.joinpath("usr/share/edk2/drivers"),
-                        self.context.root.joinpath("efi/EFI/systemd/drivers"),
-                        dirs_exist_ok=True,
-                    )
+                match self.uefi:
+                    case "systemd-boot":
+                        if self.uefi_driver == "ext4":
+                            logging.info("Install ext4 file system driver for UEFI.")
+                            shutil.copytree(
+                                self.context.root.joinpath("usr/share/edk2/drivers"),
+                                self.context.root.joinpath("efi/EFI/systemd/drivers"),
+                                dirs_exist_ok=True,
+                            )
+                    case "grub-efi":
+                        grub_dir = self.context.root.joinpath("usr/lib/ostree-grub")
+                        boot_dir = self.context.root.joinpath("boot")
+                        efi_dir = self.context.root.joinpath("efi")
+                        try:
+                            subprocess.run(
+                                ["cp", "-rf", grub_dir.joinpath("grub"), boot_dir],
+                                check=True,
+                            )
+                            subprocess.run(
+                                ["rm", "-rf", efi_dir.joinpath("EFI/BOOT")], check=True
+                            )
+                            subprocess.run(
+                                ["cp", "-rf", grub_dir.joinpath("EFI"), efi_dir],
+                                check=True,
+                            )
+                        except subprocess.CalledProcessError as e:
+                            die(f"Failed to setup grub-efi boot loader: {e}")
 
                 with utils.Chroot(self.context, self.context.root) as chroot:
                     logging.debug("Configuring kernel and initrd.")
