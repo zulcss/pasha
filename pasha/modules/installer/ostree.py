@@ -153,6 +153,11 @@ class OstreeDeploy(OstreeBase):
                 os="elxr",
             )
 
+            with complete_step("Setting up home."):
+                # create home directory manually as the ostree admin init-fs with modern
+                # parameter did not create it.
+                self.context.root.joinpath("home").mkdir(parents=True, exist_ok=True)
+
             with complete_step("Restoring /var"):
                 ref = ostree_ref(
                     self.context.root.joinpath("ostree/repo"),
