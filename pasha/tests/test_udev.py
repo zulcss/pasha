@@ -16,7 +16,7 @@ class TestUdev(base.TestCase):
         super(TestUdev, self).setUp()
 
     @mock.patch("subprocess.run")
-    def test_udev_settlek(self, mock_run):
+    def test_udev_settle(self, mock_run):
         expected_calls = [mock.call(["udevadm", "settle"], check=True)]
         udev.settle()
         self.assertEqual(mock_run.call_args_list, expected_calls)

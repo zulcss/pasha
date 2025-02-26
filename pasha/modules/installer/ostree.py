@@ -76,7 +76,7 @@ class OstreePullLocal(OstreeBase):
 
 
 class OstreePullRemote(OstreeBase):
-    """Pull ostree branch from remote repsoitory."""
+    """Pull ostree branch from remote repository."""
 
     def run(self):
         with mount_disk(sef.context, self.context.root):
@@ -233,8 +233,8 @@ class OstreePrep(OstreeBase):
                 os.symlink(t, l, dir_fd=fd)
 
     def setup_boot(self):
-        """Setup up the ostree bootdir"""
-        with complete_step(f"Preparing bootloeader"):
+        """Setup up the ostree boot directory."""
+        with complete_step(f"Preparing bootloader"):
             bootdir = self.context.root.joinpath("boot")
             targetdir = self.context.root.joinpath("usr/lib/modules")
 

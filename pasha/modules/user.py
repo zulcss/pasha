@@ -40,5 +40,5 @@ class User(ModuleBase):
             passwd = self.stage.get("passwd")
             groups = self.stage.get("groups")
 
-            with utils.Chroot(sef.context, self.context.root) as chroot:
+            with utils.Chroot(self.context, self.context.root) as chroot:
                 chroot.run(["useradd", *cmd, username])
