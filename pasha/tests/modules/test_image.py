@@ -21,7 +21,7 @@ class TestImage(base.TestCase):
         super(TestImage, self).setUp()
         self.state = mock.MagicMock()
         self.conf = OmegaConf.create(
-            {"name": "fake_name", "params": {"disk": "fake_imge.img"}}
+            {"name": "fake_name", "params": {"disk": "fake_image.img"}}
         )
         self.stage = OmegaConf.create({"name": "fake_image.img", "size": "20G"})
 

@@ -31,7 +31,7 @@ class Context:
         # Path to the unpacked rootfs or image mount point.
         self.rootfs = self.workspace.joinpath("rootfs")
 
-        # Create the workspace directory
+        # Create the workspace directory.
         self.workspace.mkdir(parents=True, exist_ok=True)
 
     @property

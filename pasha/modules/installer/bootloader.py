@@ -38,7 +38,7 @@ class Bootloader(ModuleBase):
             die(f"{self.context.params.disk} does not exist.")
 
     def run(self):
-        with complete_step("Installing systemd-boot booloader"):
+        with complete_step("Installing systemd-boot bootloader"):
             with mount_disk(self.context.params.disk, self.context.root):
                 install_systemd_boot(self.context)
 

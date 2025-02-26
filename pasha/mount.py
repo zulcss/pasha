@@ -34,7 +34,7 @@ def mount_disk(disk, rootfs):
     try:
         yield
     finally:
-        logging.debug("Umounting image...")
+        logging.debug("Unmounting image...")
         subprocess.run(
             ["systemd-dissect", "--umount", rootfs], capture_output=True, check=True
         )

@@ -28,7 +28,7 @@ def run_apt_command(mode, context, packages=None, env=None):
         "--assume-yes",
     ]
     if mode not in ["install", "remove", "update", "clean"]:
-        die(f"{mode} not vaalid")
+        die(f"{mode} not valid")
 
     if packages is None:
         packages = []
