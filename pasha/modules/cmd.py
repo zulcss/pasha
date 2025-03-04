@@ -29,7 +29,7 @@ class Command(ModuleBase):
         with mount_disk(self.context.params.disk, self.context.root):
             for cmd in self.context.stage.commands:
                 with complete_step(f"Running {cmd}"):
-                    with user.Chroot(self.context, self.context.root) as chroot:
+                    with utils.Chroot(self.context, self.context.root) as chroot:
                         chroot.run(shlex.split(cmd))
 
 
