@@ -92,6 +92,11 @@ class Chroot(object):
         self.cmd += ["--die-with-parent"]
         self.cmd += ["--chdir", "/"]
 
+        # Debian policy is to start daemons by default. The policy-rc.d
+        # script can be used to choose which ones to start.
+        # Let's install one that disable all daemons by default.
+        self.policyrcd = self.root.joinpath("usr/sbin/policy-rc.d")
+
     def __enter__(self):
         with complete_step("Setting up chroot target"):
             resolv = self.root.joinpath("etc/resolv.conf")
@@ -99,6 +104,10 @@ class Chroot(object):
                 # Use the host's /etc/resolv.conf
                 os.rename(resolv, self.root.joinpath("etc/resolv.conf.bak"))
                 self.cmd += ["--bind", "/etc/resolv.conf", "/etc/resolv.conf"]
+
+            # Disable all daemons when using the chroot.
+            if self.policyrcd.exists():
+                self.policyrcd.write_text("#!/bin/sh\nexit 101\n")
 
         return self
 
@@ -108,11 +117,15 @@ class Chroot(object):
             if resolv.exists() or resolv.is_symlink():
                 os.rename(resolv, self.root.joinpath("etc/resolv.conf"))
 
+            # Allow daemons to start by default.
+            if self.policyrcd.exists():
+                self.policyrcd.unlink()
+
     def run(self, args, **kwargs):
         """Run a command im a chrootable environment"""
         try:
             LOG.debug(f"Running {subprocess.list2cmdline(args)}.")
-            subprocess.run(self.cmd + args, check=True, **kwargs)
+            return subprocess.run(self.cmd + args, check=True, **kwargs)
         except subprocess.CalledProcessError as e:
             die(f"Failed to run command: " + e.stderr.decode("utf-8").strip())
 
