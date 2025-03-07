@@ -5,6 +5,9 @@ SPDX-License-Identifier: Apache-2.0
 
 """
 
+import os
+import pathlib
+import tempfile
 from unittest import mock
 
 import pytest
@@ -13,6 +16,7 @@ from omegaconf import OmegaConf
 from pasha import exceptions, utils
 from pasha.modules.images.compress import CompressImage
 from pasha.modules.images.raw import RawImage
+from pasha.modules.images.repart import RepartImage
 from pasha.tests import base
 
 
@@ -79,3 +83,48 @@ class TestImageCompress(base.TestCase):
         stage = OmegaConf.create({"compression": "zstd"})
         CompressImage(self.state, self.conf, stage).run()
         mock_sys.assert_called()
+
+
+class TestRepartImage(base.TestCase):
+    def setUp(self):
+        super(TestRepartImage, self).setUp()
+        self.state = mock.MagicMock()
+        self.tempdir = pathlib.Path(tempfile.mkdtemp())
+        self.state.workspace = self.tempdir
+        self.conf = OmegaConf.create(
+            {"name": "fake_name", "params": {"disk": "fake_image.img"}}
+        )
+        self.stage = OmegaConf.create({})
+
+    @mock.patch("subprocess.run")
+    @mock.patch("shutil.which")
+    def test_repart_image(self, mock_shutil, mock_run):
+        mock_shutil.return_value = True
+        expected_calls = [
+            mock.call(
+                [
+                    "systemd-repart",
+                    "--empty=create",
+                    "--discard=no",
+                    "--size=auto",
+                    "--no-pager",
+                    "--dry-run=no",
+                    "--root",
+                    self.tempdir.joinpath("fake_name/rootfs"),
+                    "--definitions",
+                    self.tempdir.joinpath("fake_name/repart-config"),
+                    "fake_image.img",
+                ],
+                check=True,
+            )
+        ]
+        RepartImage(self.state, self.conf, self.stage).run()
+        self.assertEqual(mock_run.call_args_list, expected_calls)
+        self.assertTrue(
+            os.path.exists(self.tempdir.joinpath("fake_name/repart-config/00-esp.conf"))
+        )
+        self.assertTrue(
+            os.path.exists(
+                self.tempdir.joinpath("fake_name/repart-config/10-root.conf")
+            )
+        )
