@@ -105,7 +105,7 @@ class Chroot(object):
     def __exit__(self, exc_type, exc_value, traceback):
         with complete_step("Tearing down chroot target"):
             resolv = self.root.joinpath("etc/resolv.conf.bak")
-            if resolv.exists():
+            if resolv.exists() or resolv.is_symlink():
                 os.rename(resolv, self.root.joinpath("etc/resolv.conf"))
 
     def run(self, args, **kwargs):
