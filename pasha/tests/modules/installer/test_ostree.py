@@ -50,3 +50,27 @@ class TestOstree(base.TestCase):
         ]
         ostree.OstreeInit(self.state, self.config, self.stage).run()
         self.assertEqual(mock_run.call_args_list, expected_calls)
+
+    @mock.patch("subprocess.run")
+    @mock.patch("os.path.exists")
+    def test_ostree_config(self, mock_exists, mock_run):
+        rootfs = self.tempdir.joinpath("fake_name/rootfs")
+        rootfs = self.tempdir.joinpath("fake_name/rootfs/ostree/repo")
+        expected_calls = [
+            mock.call(
+                ["systemd-dissect", "--mount", "--mkdir", "/dev/sda", rootfs],
+                capture_output=True,
+                check=True,
+            ),
+            mock.call(
+                ["ostree", "config", "set", "--repo", repo, "fake_key", "True"],
+                check=True,
+            ),
+            mock.call(
+                ["systemd-dissect", "--umount", rootfs], capture_output=True, check=True
+            ),
+        ]
+        mock_exists.return_value = True
+        self.stage = OmegaConf.create({"config": {"fake_key": True}})
+        ostree.OstreeConfig(self.state, self.config, self.stage).run()
+        self.assertEqual(mock_run.call_args_list, expected_calls)

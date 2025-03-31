@@ -241,3 +241,23 @@ class OstreePrep(OstreeBase):
             initrd = bootdir.joinpath(initrd)
             logging.info(f"Found {initrd}")
             os.rename(initrd, targetdir.joinpath(f"{version}/initramfs.img"))
+
+class OstreeConfig(OstreeBase):
+    """Set ostree configuration parameters."""
+    def run(self):
+        disk = self.context.params.disk
+        if not os.path.exists(disk):
+            die(f"Unable to find {disk}.")
+        with mount_disk(disk, self.context.rootfs):
+            self.ostree_config = self.context.stage.config
+            repo = self.context.rootfs.joinpath("ostree/repo")
+            if not os.path.exists(repo):
+                die(f"{repo} does not exist.")
+            
+            for key, val in self.ostree_config.items():
+                try:
+                    subprocess.run(
+                        ["ostree", "config", "set", "--repo", repo, key, str(val)], check=True
+                    )
+                except subprocess.CalledProcessError as e:
+                    die("Failed to set ostree configuration parameter: " + + e.stderr.decode("utf-8").strip())
