@@ -138,7 +138,7 @@ class OstreeDeploy(OstreeBase):
                     self.context.root,
                     sysroot=self.context.root,
                 )
-                cli("admin", "os-init", "elxr", sysroot=self.context.root)
+                cli("admin", "stateroot-init", "elxr", sysroot=self.context.root)
 
             kargs = []
             for arg in self.kernel_args:
@@ -157,19 +157,6 @@ class OstreeDeploy(OstreeBase):
                 # create home directory manually as the ostree admin init-fs with modern
                 # parameter did not create it.
                 self.context.root.joinpath("home").mkdir(parents=True, exist_ok=True)
-
-            with complete_step("Restoring /var"):
-                ref = ostree_ref(
-                    self.context.root.joinpath("ostree/repo"),
-                    self.context.params.branch,
-                )
-                repo_root = self.context.root.joinpath(
-                    f"ostree/deploy/elxr/deploy/{ref}.0"
-                )
-                var_to = self.context.root.joinpath("ostree/deploy/elxr")
-                var_from = os.path.join(repo_root, "usr/rootdirs/var")
-                logging.debug(f"Copying {var_from} -> {var_to}")
-                subprocess.run(f"cp -af {var_from} {var_to}", shell=True)
 
 
 class OstreePrep(OstreeBase):
@@ -199,13 +186,6 @@ class OstreePrep(OstreeBase):
                 self.context.root.joinpath("var/lib/dpkg"),
                 self.context.root.joinpath("usr/share/dpkg/database"),
             )
-            dir_perm = 0o755
-            os.mkdir(self.context.root.joinpath("usr/rootdirs"), dir_perm)
-            os.rename(
-                self.context.root.joinpath("var"),
-                self.context.root.joinpath("usr/rootdirs/var"),
-            )
-            os.mkdir(self.context.root.joinpath("var"), dir_perm)
 
         with complete_step("Moving /etc to /usr/etc."):
             shutil.move(
