@@ -167,18 +167,6 @@ class OstreePrep(OstreeBase):
             self.setup_boot()
             self.convert_to_ostree()
 
-        with console.status(f"Committing {self.context.params.branch} to {self.repo}."):
-            cli(
-                "commit",
-                str(self.context.root),
-                repo=self.repo,
-                branch=self.branch,
-                subject="Initial commit",
-            )
-
-        logging.info("Updating summary of ostree repository.")
-        subprocess.run(["ostree", "summary", "-u", f"--repo={self.repo}"], check=True)
-
     def convert_to_ostree(self):
         """Convert Debian rootfs to ostree."""
         with complete_step("Moving /var/lib/dpkg to /usr/share/dpkg/database."):
@@ -242,8 +230,10 @@ class OstreePrep(OstreeBase):
             logging.info(f"Found {initrd}")
             os.rename(initrd, targetdir.joinpath(f"{version}/initramfs.img"))
 
+
 class OstreeConfig(OstreeBase):
     """Set ostree configuration parameters."""
+
     def run(self):
         disk = self.context.params.disk
         if not os.path.exists(disk):
@@ -253,11 +243,27 @@ class OstreeConfig(OstreeBase):
             repo = self.context.rootfs.joinpath("ostree/repo")
             if not os.path.exists(repo):
                 die(f"{repo} does not exist.")
-            
+
             for key, val in self.ostree_config.items():
                 try:
                     subprocess.run(
-                        ["ostree", "config", "set", "--repo", repo, key, str(val)], check=True
+                        ["ostree", "config", "set", "--repo", repo, key, str(val)],
+                        check=True,
                     )
                 except subprocess.CalledProcessError as e:
-                    die("Failed to set ostree configuration parameter: " + + e.stderr.decode("utf-8").strip())
+                    die(f"Failed to set ostree config parameter: {e}")
+
+
+class OstreeCommit(OstreeBase):
+    def run(self):
+        with console.status(f"Committing {self.context.params.branch} to {self.repo}."):
+            cli(
+                "commit",
+                str(self.context.root),
+                repo=self.repo,
+                branch=self.branch,
+                subject="Initial commit",
+            )
+
+        logging.info("Updating summary of ostree repository.")
+        subprocess.run(["ostree", "summary", "-u", f"--repo={self.repo}"], check=True)
