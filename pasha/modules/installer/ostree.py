@@ -131,6 +131,7 @@ class OstreeDeploy(OstreeBase):
             # Running init-fs
             with console.status(f"Pulling {self.branch} from {self.repo}."):
                 cli("pull-local", self.repo, self.branch, repo=repo)
+                cli("summary", "-u", repo=repo)
                 cli(
                     "admin",
                     "init-fs",
