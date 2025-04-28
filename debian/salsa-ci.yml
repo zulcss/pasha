@@ -1,16 +1,13 @@
 include:
  - template: Jobs/Secret-Detection.gitlab-ci.yml
  - template: SAST.gitlab-ci.yml
- - https://gitlab.com/elxr/ci/pipeline/raw/elxr/salsa-ci.yml
- - https://gitlab.com/elxr/ci/pipeline/raw/elxr/pipeline-jobs.yml
+ - https://gitlab.com/elxr/ci/pipeline/raw/elxr/recipes/elxr.yml
  # Disable until if/when a dockerfile is added to the project
  #- local: .docker-ci.yml
  - local: .python-ci.yml
  - local: .misc-lint.yml
 
 variables:
- RELEASE: 'bookworm'
- SALSA_CI_DISABLE_VERSION_BUMP: 1
  SALSA_CI_DISABLE_PUBLISH_TO_SHARED_APTLY: 1
  SALSA_CI_DISABLE_BUILD_PACKAGE_ARM64: 0
  SALSA_CI_DISABLE_BLHC: 1
@@ -22,10 +19,3 @@ stages:
  - build
  - publish
  - test
-
-workflow:
- rules:
-  - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-  - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS
-    when: never
-  - if: $CI_COMMIT_BRANCH
