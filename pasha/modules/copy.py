@@ -25,7 +25,6 @@ class Copy(ModuleBase):
         self.context = Context(self.state, self.config, self.stage)
 
     def run(self):
-
         source = self.context.stage.get("source")
         dest = self.context.stage.get("dest")
         if dest:

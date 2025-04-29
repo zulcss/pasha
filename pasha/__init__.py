@@ -12,6 +12,4 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import pbr.version
-
-__version__ = pbr.version.VersionInfo("pasha").version_string()
+__version__ = "0.1.7"

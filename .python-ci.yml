@@ -8,9 +8,6 @@
     - source venv/bin/activate
     - pip3 install -r requirements.txt -r ci-requirements.txt
 
-variables:
-  PBR_VERSION: 0.0.1
-
 lint python:
   <<: *python_setup
   needs: []
