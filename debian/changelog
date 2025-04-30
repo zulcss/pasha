@@ -1,3 +1,25 @@
+pasha (1.0.1) unstable; urgency=medium
+
+  * New upstream release:
+    - 3a3772a: pasha: Migrate setup.cfg content to setup.py
+    - 2e7ef0e: Add ostree summary command
+    - 73bdb53: Split out ostree commit
+    - 827d91f: ostree: Add module to configure ostree repository
+    - cdb56e9: Make use of ostree-stateroot-init(1)
+    - 1c3ffb5: utils.py: Disable services while in chroot
+    - 6054686: Add missing documentation for the apt modules
+    - 16284f5: Add documentation for the "utils.copy" module
+    - 4935ad0: Add module documentation for "container.build"
+    - db29b9a: Add docs from utils.run_shell module
+    - b215808: Fix yaml syntax for run_command module
+    - bacf649: Drop utils.undeploy module
+    - 45b6ec2: Drop utils.deploy module documentation
+    - 85c5931: Update "unpack.tarball" module
+    - be110a8: Drop qemu module
+    - 74b2e90:  Update bootstrap module documentation
+
+ -- Chuck Short <charles.short@windriver.com>  Wed, 30 Apr 2025 09:31:07 -0400
+
 pasha (1.0.0) unstable; urgency=medium
 
   * New upstream release:
