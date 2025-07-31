@@ -45,7 +45,6 @@ class Bootstrap(ModuleBase):
             logfile = self.context.staging.joinpath("mmdebstrap.log")
             cmd = [
                 "mmdebstrap",
-                f"--logfile={logfile}",
                 f"--architecture={self.context.stage.architecture}",
             ]
             if self.context.state.debug:
@@ -167,8 +166,24 @@ class Bootstrap(ModuleBase):
             logging.info(f"Creating Debian system for {self.context.config.name}.")
             with console.status("Running mmdebstrap, please wait.") as status:
                 try:
-                    subprocess.run(cmd, check=True)
-                except subprocess.CalledProcessError:
+                    proc = subprocess.Popen(
+                        cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True
+                    )
+                    with open(logfile, "w") as log_file:
+                        for line in proc.stdout:
+                            if self.context.state.debug:
+                                logging.info(line.strip())
+                            log_file.write(line)
+                    proc.wait()
+                    if proc.returncode != 0:
+                        logging.info(
+                            f"mmdebstrap failed with return code - {proc.returncode}"
+                        )
+                        die(
+                            f"Failed to run mmdebstrap.",
+                            hint=(f"Please see {logfile}."),
+                        )
+                except Exception as e:
                     die(
                         f"Failed to run mmdebstrap.",
                         hint=(f"Please see {logfile}."),

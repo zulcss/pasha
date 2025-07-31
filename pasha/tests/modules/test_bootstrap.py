@@ -28,33 +28,46 @@ class TestBootstrapModule(base.TestCase):
             {"target": "fake_target", "suite": "bookworm", "architecture": "amd64"}
         )
         self.cwd = os.path.join(os.getcwd(), "mmdebstrap.log")
+        self.addCleanup(self.cleanup)
 
-    @mock.patch("subprocess.run")
+    def cleanup(self):
+        if os.path.exists(self.cwd):
+            try:
+                os.remove(self.cwd)
+            except Exception as e:
+                print(f"Warning: Failed to delete mmdebstrap.log: {e}")
+
+    @mock.patch("subprocess.Popen")
     @mock.patch("shutil.which")
     def test_bootstrap(self, mock_which, mock_exec):
         rootfs = self.tempdir.joinpath("fake_name/rootfs")
         rootfs.mkdir(parents=True, exist_ok=True)
-        mock_exec.return_value = (0, "")
         mock_which.return_value = "/usr/bin/mmdebstrap"
+
+        fake_proc = mock.Mock()
+        fake_proc.returncode = 0
+        fake_proc.stdout = [""]
+        mock_exec.return_value = fake_proc
+
         bootstrap.Bootstrap(self.state, self.config, self.stage).run()
         mock_exec.assert_called_once_with(
             [
                 "mmdebstrap",
-                f"--logfile={self.cwd}",
                 "--architecture=amd64",
                 "--verbose",
                 "bookworm",
                 "fake_target",
             ],
-            check=True,
+            stdout=-1,
+            stderr=-2,
+            text=True,
         )
 
-    @mock.patch("subprocess.run")
+    @mock.patch("subprocess.Popen")
     @mock.patch("shutil.which")
     def test_bootstrap_with_extra_args(self, mock_which, mock_exec):
         rootfs = self.tempdir.joinpath("fake_name/rootfs")
         rootfs.mkdir(parents=True, exist_ok=True)
-        mock_exec.return_value = (0, "")
         mock_which.return_value = "/usr/bin/mmdebstrap"
         stage = OmegaConf.create(
             {
@@ -65,11 +78,16 @@ class TestBootstrapModule(base.TestCase):
                 "setup_hooks": ["sync-in overlay/debian/ /"],
             }
         )
+
+        fake_proc = mock.Mock()
+        fake_proc.stdout = [""]
+        fake_proc.returncode = 0
+        mock_exec.return_value = fake_proc
+
         bootstrap.Bootstrap(self.state, self.config, stage).run()
         mock_exec.assert_called_once_with(
             [
                 "mmdebstrap",
-                f"--logfile={self.cwd}",
                 "--architecture=amd64",
                 "--verbose",
                 "--include=ostree",
@@ -77,5 +95,7 @@ class TestBootstrapModule(base.TestCase):
                 "bookworm",
                 "fake_target",
             ],
-            check=True,
+            stdout=-1,
+            stderr=-2,
+            text=True,
         )
