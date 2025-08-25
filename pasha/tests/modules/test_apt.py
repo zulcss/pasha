@@ -39,11 +39,6 @@ class TestAptModule(base.TestCase):
         rootfs = self.tempdir.joinpath("fake_name/rootfs")
         expected_calls = [
             mock.call(
-                ["systemd-dissect", "--mount", "--mkdir", "/dev/sda", rootfs],
-                check=True,
-                capture_output=True,
-            ),
-            mock.call(
                 [
                     "bwrap",
                     "--bind",
@@ -70,9 +65,6 @@ class TestAptModule(base.TestCase):
                 check=True,
                 env={"DEBIAN_FRONTEND": "noninteractive"},
             ),
-            mock.call(
-                ["systemd-dissect", "--umount", rootfs], capture_output=True, check=True
-            ),
         ]
         rootfs = self.tempdir.joinpath("fake_name/rootfs")
         rootfs.mkdir(parents=True, exist_ok=True)
@@ -85,11 +77,6 @@ class TestAptModule(base.TestCase):
         stage = OmegaConf.create({"packages": ["foo"]})
         rootfs = self.tempdir.joinpath("fake_name/rootfs")
         expected_calls = [
-            mock.call(
-                ["systemd-dissect", "--mount", "--mkdir", "/dev/sda", rootfs],
-                check=True,
-                capture_output=True,
-            ),
             mock.call(
                 [
                     "bwrap",
@@ -118,9 +105,6 @@ class TestAptModule(base.TestCase):
                 check=True,
                 env={"DEBIAN_FRONTEND": "noninteractive"},
             ),
-            mock.call(
-                ["systemd-dissect", "--umount", rootfs], capture_output=True, check=True
-            ),
         ]
         rootfs = self.tempdir.joinpath("fake_name/rootfs")
         rootfs.mkdir(parents=True, exist_ok=True)
@@ -133,11 +117,6 @@ class TestAptModule(base.TestCase):
         stage = OmegaConf.create({"packages": ["foo"]})
         rootfs = self.tempdir.joinpath("fake_name/rootfs")
         expected_calls = [
-            mock.call(
-                ["systemd-dissect", "--mount", "--mkdir", "/dev/sda", rootfs],
-                check=True,
-                capture_output=True,
-            ),
             mock.call(
                 [
                     "bwrap",
@@ -192,9 +171,6 @@ class TestAptModule(base.TestCase):
                 ],
                 check=True,
                 env={"DEBIAN_FRONTEND": "noninteractive"},
-            ),
-            mock.call(
-                ["systemd-dissect", "--umount", rootfs], capture_output=True, check=True
             ),
         ]
         rootfs = self.tempdir.joinpath("fake_name/rootfs")
