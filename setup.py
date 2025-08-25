@@ -78,8 +78,8 @@ setup(
             "bootstrap.mmdebstrap = pasha.modules.bootstrap:Bootstrap",
             # unpack module
             "unpack.tarball = pasha.modules.unpack:Unpack",
-            # container modules
-            "container.build = pasha.modules.container:Container",
+            # oci container modules
+            "container.build = pasha.modules.oci:ContainerCreate",
             # images modules
             "image.raw = pasha.modules.images.raw:RawImage",
             "image.compress = pasha.modules.images.compress:CompressImage",
