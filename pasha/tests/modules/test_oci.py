@@ -11,7 +11,7 @@ from unittest import mock
 
 from omegaconf import OmegaConf
 
-from pasha.modules import container
+from pasha.modules import oci
 from pasha.tests import base
 
 
@@ -35,9 +35,13 @@ class TestContainerBuildModule(base.TestCase):
     @mock.patch("os.path.exists")
     @mock.patch("shutil.rmtree")
     def test_container_build(self, mock_tree, mock_path, mock_which, mock_run):
-        rootfs = self.state.workspace.joinpath("fake_name/rootfs")
+        oci.ContainerCreate(self.state, self.config, self.stage).run()
+        bundle_dir = self.state.workspace.joinpath("fake_name/fake_image-unpacked")
+        rootfs = bundle_dir.joinpath("rootfs")
         expected_calls = [
-            mock.call("umoci init --layout fake_image", shell=True),
+            mock.call(["umoci", "init", "--layout", "fake_image"]),
+            mock.call(["umoci", "new", "--image", "fake_image:latest"]),
+            mock.call(["umoci", "unpack", "--image", "fake_image:latest", bundle_dir]),
             mock.call(
                 [
                     "tar",
@@ -51,8 +55,6 @@ class TestContainerBuildModule(base.TestCase):
                 check=True,
                 capture_output=True,
             ),
-            mock.call("umoci new --image fake_image", shell=True),
-            mock.call(f"umoci insert --image fake_image:latest {rootfs} /", shell=True),
+            mock.call(["umoci", "repack", "--image", "fake_image:latest", bundle_dir]),
         ]
-        container.Container(self.state, self.config, self.stage).run()
         self.assertEqual(mock_run.call_args_list, expected_calls)
