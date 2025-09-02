@@ -1,3 +1,14 @@
+pasha (1.0.2) unstable; urgency=medium
+
+  * New upstream release:
+    - 96399ab: Fix rs build --debug option should show more debug messages
+    - 5a2e2d6: loop.py: block and wait for all partitions to be available when attaching a disk image
+    - d7cbed1: Remove invalid Copyrights
+    - 1671230: CI: use the elxr.yml recipe file
+    - 300f928: CI: remove the unused `.gitlab-ci.yml` file
+
+ -- William Lyu <William.Lyu@windriver.com>  Tue, 02 Sep 2025 15:04:24 -0400
+
 pasha (1.0.1) unstable; urgency=medium
 
   * New upstream release:
