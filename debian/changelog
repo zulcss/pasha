@@ -1,3 +1,10 @@
+pasha (1.0.3) unstable; urgency=medium
+
+  * Do not create /opt symlink:
+    - d89fa66: ostree.py: do not generate /opt symlink
+
+ -- Joe Slater <joe.slater@windriver.com>  Thu, 11 Sep 2025 10:17:17 -0700
+
 pasha (1.0.2) unstable; urgency=medium
 
   * New upstream release:
