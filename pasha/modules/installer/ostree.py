@@ -186,10 +186,10 @@ class OstreePrep(OstreeBase):
             self.context.root.joinpath("sysroot").mkdir(parents=True, exist_ok=True)
 
         with complete_step("Setting up symlinks."):
+            # do not create /opt -> /var/opt
             TOPLEVEL_LINKS = {
                 "media": "run/media",
                 "mnt": "var/mnt",
-                "opt": "var/opt",
                 "ostree": "sysroot/ostree",
                 "root": "var/roothome",
                 "srv": "var/srv",
