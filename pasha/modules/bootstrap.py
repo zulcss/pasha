@@ -159,6 +159,12 @@ class Bootstrap(ModuleBase):
                 logging.debug("Adding format.")
                 cmd.extend([f"--format={format}"])
 
+            cache_proxy = getattr(self.state, "cache_proxy", None)
+            if cache_proxy:
+                """Configure cache proxy for package caching."""
+                logging.debug("Adding cache proxy.")
+                cmd.extend([f'--aptopt=Acquire::http::Proxy "{cache_proxy}"'])
+
             cmd.extend([self.context.stage.suite, self.context.stage.target])
             if repo:
                 cmd.extend([repo])
