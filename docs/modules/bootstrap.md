@@ -40,4 +40,5 @@ options: []
     * **mode** (string) Run specific mmdebstrap mode.
     * **keyring** (list) Additional gpg keys to install.
     * **dpkg_opts** (list) Extra dpkg configuration options.
-    * **format** (string) rootfs artifact format. 
+    * **format** (string) rootfs artifact format.
+    * **cache_proxy** (string) HTTP proxy for package caching (e.g., "http://localhost:3142" for apt-cacher-ng).
