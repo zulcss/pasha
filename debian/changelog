@@ -1,30 +1,5 @@
-pasha (0.1.7) unstable; urgency=medium
+pasha (0.0.0) UNRELEASED; urgency=medium
 
-  [Chuck Short]
-  * debian/control: Add python3-omegaconf to build depends. 
-  * debian/control: Add mmdebstrap to build depends.
+  * Development branch, not used for packaging
 
-  [Hongxu Jia]
-  * New upstream release
-  * Erase available old filesystem on disk before creating partition
-  * pasha/modules/installer/ostree.py: update summary of ostree repository
-
- -- Hongxu Jia <hongxu.jia@windriver.com>  Tue, 28 May 2024 09:59:37 -0400
-
-pasha (0.1.2) bookworm; urgency=medium
-
-  * pasha/modules/installer/disk.py: import sys
-
- -- Hongxu Jia <hongxu.jia@windriver.com>  Mon, 06 May 2024 05:43:28 -0400
-
-pasha (0.1.1) bookworm; urgency=medium
-
-  * Make ostree support devicetree directory
-
- -- Hongxu Jia <hongxu.jia@windriver.com>  Tue, 30 Apr 2024 09:57:49 -0400
-
-pasha (0.1) bookworm; urgency=medium
-
-  * Initial release.
-
- -- Chuck Short <charles.short@windriver.com>  Mon, 15 Apr 2024 02:05:24 +0000
+ -- Bart Simpson <bart.simpson@windriver.com>  Tue, 16 Sep 2025 16:58:41 -0400
