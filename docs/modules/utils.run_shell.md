@@ -13,3 +13,5 @@ options: []
 * **module** (string): The name of the module to load.
 * **options** (object): Optional options to pass to the module.
    * **commands** (list): Commands to run during the build.
+   * **from_root_dir** (boolean): If true, run commands in the mounted image
+     root directory. Default: false.
