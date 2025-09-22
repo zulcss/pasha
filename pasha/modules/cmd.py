@@ -45,7 +45,9 @@ class ShellCommand(ModuleBase):
 
     def run(self):
         commands = self.context.stage.get("commands") or []
+        from_root_dir = self.context.stage.get("from_root_dir", False)
         with mount_disk(self.context.params.disk, self.context.root):
             for cmd in commands:
                 with complete_step(f"Running {cmd}"):
-                    subprocess.run(cmd, shell=True)
+                    cwd = self.context.root if from_root_dir else None
+                    subprocess.run(cmd, shell=True, cwd=cwd)
