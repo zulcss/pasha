@@ -3,7 +3,7 @@ title: bootstrap module
 ---
 
 This module unpacks a rootfs tarball or squashfs image. The module
-is loaded by specifying "bootstrap.mmdestrap" in the manifest.
+is loaded by specifying "bootstrap.mmdebstrap" in the manifest.
 
 ```yaml
 name: "Description of the task."
@@ -32,11 +32,11 @@ options: []
     * **setup_hooks** (list) Execute arbitrary command right after initial
       setup. Please see mmdebstrap man page for an explanation.
     * **essential_hooks** (list) Commands to run after the "Essential: yes" packages have
-      beeen installed. Please see mmdebstrap man page for an explanation.
+      been installed. Please see mmdebstrap man page for an explanation.
     * **extract_hooks** (list) Commands to run after the essential packages are
-      installed. Please see mmdebstrap man page for an explantation.
+      installed. Please see mmdebstrap man page for an explanation.
     * **apt_hooks** (list) Extra configuration for apt which will be
-      permantents added. Please see the man page.
+      permanently added. Please see the man page.
     * **mode** (string) Run specific mmdebstrap mode.
     * **keyring** (list) Additional gpg keys to install.
     * **dpkg_opts** (list) Extra dpkg configuration options.

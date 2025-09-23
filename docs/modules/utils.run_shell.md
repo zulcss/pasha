@@ -1,5 +1,5 @@
 ---
-title: Run sehll module
+title: Run shell module
 ---
 
 This module runs a shell on the image during the build process. 

@@ -16,7 +16,7 @@ options:
 * **name** (string): Description of the task.
 * **module** (string) The name of the module to load.
 * **options** (object):
-    * **kernel_args** (string): Sets the /proc/cmdline values to book a kernel.
+    * **kernel_args** (string): Sets the /proc/cmdline values to boot a kernel.
     * **uefi_driver** (string): The uefi driver to load while setting up 
       the bootloader. 
   
