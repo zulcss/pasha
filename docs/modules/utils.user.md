@@ -1,6 +1,6 @@
 ---
 title: User module
-===
+---
 
 Create a new user in the deployment. The module is loaded by specifying the
 "utils.user" module.
