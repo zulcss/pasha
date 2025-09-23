@@ -7,7 +7,7 @@ is loaded by specifying "apt.install" in the manifest.
 
 ```yaml
 name: "Description of the task."
-module: apt.update
+module: apt.install
 options:
   packages:
     - foo

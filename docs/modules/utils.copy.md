@@ -14,6 +14,6 @@ options:
 
 * **name** (string): Description of the task.
 * **module** (string): The name of the module to load (utils.copy)
-* **options** (object): Options to pass to the utils.user module
+* **options** (object): Options to pass to the utils.copy module
     * **source**: (list) The path to copy the file from.
     * **dest**: (list) The path to copy the file to.
