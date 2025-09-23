@@ -12,9 +12,9 @@ options: []
 ```
 
 * **name** (string): Description of the task.
-* **module** (string): The name of the mode to load.
-* **options** (string): Optional options to pass the the mdoule.
-   * **root** (sring):  The size of the root partition in Gigabytes
+* **module** (string): The name of the module to load.
+* **options** (string): Optional options to pass to the module.
+   * **root** (string):  The size of the root partition in Gigabytes
    * **esp** (string): The size of the ESP partition in Mega/Giga bytes,
                        the minimum size is 512MB, otherwise the image will 
                        not boot.
