@@ -11,7 +11,7 @@ name: "Description of the task."
 module: installer.ostree.deploy
 options:
   kernel_args:
-    - rootLABEL=ROOT
+    - root=LABEL=ROOT
     - rw
     - console=tty0
 ```

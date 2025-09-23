@@ -12,7 +12,7 @@ options:
   filesystem:
     - name: EFI
       label: EFI
-      fs vfat
+      fs: vfat
       options: []
     - name: ROOT
       label: ROOT
