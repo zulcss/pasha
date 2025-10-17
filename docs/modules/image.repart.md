@@ -8,7 +8,10 @@ by specifying "image.repart" in the manifest.
 ```yaml
 name: "Description of the task."
 module: images.repart
-options: []
+options:
+  root: "20G"
+  esp: "512M"
+  definitions: "repart-config/"
 ```
 
 * **name** (string): Description of the task.

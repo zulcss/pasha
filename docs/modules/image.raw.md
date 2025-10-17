@@ -8,7 +8,9 @@ is loaded by specifying "image.raw" in the manifest
 ```yaml
 name: "Description of the task."
 module: images.raw
-options: []
+options:
+  name: "disk.img"
+  size: "20G"
 ```
 
 * **name** (string): Description of the task.

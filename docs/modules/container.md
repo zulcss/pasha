@@ -9,7 +9,8 @@ in the manifest's parameters.
 ```yaml
 name: "Description of the task."
 module: container.build
-options: []
+options:
+  image: "myimage:latest"
 ```
 
 * **name** (string): Description of the task.
