@@ -1,6 +1,4 @@
----
-title: apt update module
----
+# apt update module
 
 This module run apt-get update on the image. The module
 is loaded by specifying "apt.update" in the manifest.

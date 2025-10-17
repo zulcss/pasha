@@ -1,10 +1,7 @@
----
-title: ostree pull remote module
----
+# ostree pull remote module
 
 This module pulls commits from a remote module. This module is loaded
 by specifying the "installer.ostree.pull.remote" module.
-
 
 ```yaml
 name: "Description of the task."

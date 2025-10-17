@@ -1,6 +1,4 @@
----
-title: apt install module
----
+# apt install module
 
 This module run apt-get install on the image. The module
 is loaded by specifying "apt.install" in the manifest.
@@ -10,7 +8,7 @@ name: "Description of the task."
 module: apt.install
 options:
   packages:
-    - foo
+        * foo
 ```
 
 * **name** (string): Description of the task.

@@ -1,10 +1,7 @@
----
-title: ostree prep module
----
+# ostree prep module
 
 This module transforms a rootfs tarball into a deployable ostree branch.
 This module is loaded by specifying the "installer.ostree.prep" module.
-
 
 ```yaml
 name: "Description of the task."

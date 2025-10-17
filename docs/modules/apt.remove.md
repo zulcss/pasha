@@ -1,6 +1,4 @@
----
-title: apt remove module
----
+# apt remove module
 
 This module run apt-get remove on the image. The module
 is loaded by specifying "apt.remove" in the manifest.
@@ -10,7 +8,7 @@ name: "Description of the task."
 module: apt.remove
 options:
   packages:
-    - foo
+        * foo
 ```
 
 * **name** (string): Description of the task.
