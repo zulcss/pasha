@@ -7,11 +7,8 @@ lint yaml:
   script:
     - yamllint -f colored $(find . -name '*.yml')
 
-lint rst:
+lint markdown:
   stage: lint
-  image:
-    name: python:latest
-  before_script:
-    - pip install restructuredtext-lint
+  image: registry.gitlab.com/pipeline-components/markdownlint:latest
   script:
-    - rst-lint --level info *.rst
+    - mdl --style all --warnings .
