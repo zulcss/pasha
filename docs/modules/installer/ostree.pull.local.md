@@ -1,8 +1,7 @@
----
-title: ostree pull local module
----
+# ostree pull local module
 
-This module pulls commits from one repository into another. This module is loaded
+This module pulls commits from one repository into another. This module is
+loaded
 by specifying the "installer.ostree.pull.local" module.
 
 ```yaml

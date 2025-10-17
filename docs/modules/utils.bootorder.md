@@ -1,6 +1,4 @@
----
-title: BootOrder module
----
+# BootOrder module
 
 This module sets EFI boot order. The module
 is loaded by specifying "utils.bootorder" in the manifest.

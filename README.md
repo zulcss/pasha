@@ -1,6 +1,8 @@
 # Pasha - Debian OS Build Modules
 
-Pasha is a modular framework for building Debian-based OS images and containers. It provides a collection of modules that can be orchestrated to create custom Linux distributions, container images, and installer media.
+Pasha is a modular framework for building Debian-based OS images and
+containers. It provides a collection of modules that can be orchestrated to
+create custom Linux distributions, container images, and installer media.
 
 ## Features
 
@@ -13,7 +15,9 @@ Pasha is a modular framework for building Debian-based OS images and containers.
 
 ## Installation
 
-Please use installation instructions found in the Rucksack or Tiler projects. The following installation instructions are only provided to assist in configuring a standalone development environment for Pasha.
+Please use installation instructions found in the Rucksack or Tiler projects.
+The following installation instructions are only provided to assist in
+configuring a standalone development environment for Pasha.
 
 Install from source:
 
@@ -31,30 +35,36 @@ pip install -e .
 ## Available Modules
 
 ### Bootstrap & Packaging
+
 * `bootstrap.mmdebstrap` - Create Debian rootfs using mmdebstrap
 * `apt.update` - Update package lists
 * `apt.install` - Install packages
 * `apt.remove` - Remove packages
 
 ### Image Creation
+
 * `image.raw` - Create raw disk images
 * `image.compress` - Compress disk images (gzip, xz, zstd)
 * `image.repart` - Partition images using systemd-repart
 
 ### Container Support
+
 * `container.build` - Build OCI containers
 
 ### File Operations
+
 * `unpack.tarball` - Extract tarballs
 * `utils.copy` - Copy files between host and target
 * `utils.user` - Create users in the target system
 
 ### System Utilities
+
 * `utils.run_command` - Execute commands in target
 * `utils.run_shell` - Interactive shell access
 * `utils.bootorder` - Configure EFI boot order
 
 ### Installer Modules
+
 * `installer.disk.parted` - Partition disks
 * `installer.disk.fs` - Create filesystems
 * `installer.bootloader` - Install bootloaders
@@ -62,6 +72,7 @@ pip install -e .
 * `installer.bootloader.ostree` - OSTree bootloader
 
 ### OSTree Integration
+
 * `installer.ostree.init` - Initialize OSTree repository
 * `installer.ostree.commit` - Commit to OSTree
 * `installer.ostree.deploy` - Deploy OSTree commits
@@ -69,6 +80,7 @@ pip install -e .
 * `installer.ostree.pull.remote` - Pull from remote repository
 
 ### Security
+
 * `trivy.scanner.vuln` - Vulnerability scanning with Trivy
 
 ## Configuration
@@ -87,7 +99,7 @@ parameters:
   target: "/tmp/build"
 
 tasks:
-  - name: "Task description"
+        * name: "Task description"
     module: module.name
     options:
       param1: value1
@@ -99,9 +111,9 @@ tasks:
 To add a new module:
 
 1. Copy `pasha/modules/noop.py` as a template
-2. Implement your module class
-3. Add entry point in `setup.py` under `pasha.modules`
-4. Create documentation in `docs/modules/`
+1. Implement your module class
+1. Add entry point in `setup.py` under `pasha.modules`
+1. Create documentation in `docs/modules/`
 
 Testing and Code Quality:
 
@@ -134,7 +146,9 @@ Contributions are welcome! Please ensure:
 
 ### Branch Guidelines
 
-* Send changes to the `main` branch **unless** it is a bug fix that only applies to a specific release branch
-* Merge requests to port bug fixes from `main` to release branches should be sent after a bug fix is merged to `main`
+* Send changes to the `main` branch **unless** it is a bug fix that only applies
+  to a specific release branch
+* Merge requests to port bug fixes from `main` to release branches should be
+  sent after a bug fix is merged to `main`
 * Minor releases should only include bug fixes
 * Major releases will include bug fixes and new features

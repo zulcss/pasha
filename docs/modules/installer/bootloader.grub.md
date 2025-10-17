@@ -1,6 +1,4 @@
----
-title: Installer grub bootloader module
----
+# Installer grub bootloader module
 
 This module will install GRUB bootloader on a block device.
 This module is loaded by specifying the "installer.bootloader.grub" module.
@@ -15,4 +13,4 @@ options:
 * **name** (string): Description of the task.
 * **module** (string): The name of the module to load.
 * **options** (object): Optional options to pass to the module.
-    * **kernel_args** (string): Kernel command line arguments.
+   * **kernel_args** (string): Kernel command line arguments.

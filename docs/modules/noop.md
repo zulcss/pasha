@@ -1,6 +1,4 @@
----
-title: Noop module
----
+# Noop module
 
 This module is a place holder to ensure that pasha is being loaded correctly.
 The module can be used as a template to create more modules from. The module
