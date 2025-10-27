@@ -21,7 +21,9 @@ class TestUnDeploy(base.TestCase):
         self.state = mock.MagicMock()
         self.tempdir = pathlib.Path(tempfile.mkdtemp())
         self.state.workspace = self.tempdir
-        self.conf = OmegaConf.create({"name": "fake_name"})
+        self.conf = OmegaConf.create(
+            {"name": "fake_name", "params": {"disk": "/dev/sda"}}
+        )
         self.stage = OmegaConf.create(
             {"user": "fake_user", "passwd": "fake_pass", "groups": ["sudo"]}
         )
