@@ -10,6 +10,7 @@ from pasha import utils
 from pasha.context import Context
 from pasha.log import complete_step
 from pasha.modules.base import ModuleBase
+from pasha.mount import mount_disk
 
 
 class User(ModuleBase):
@@ -37,8 +38,9 @@ class User(ModuleBase):
         cmd += ["--shell", "/bin/bash"]
 
         with complete_step(f"Adding {username}"):
-            passwd = self.stage.get("passwd")
-            groups = self.stage.get("groups")
+            with mount_disk(self.context.params.disk, self.context):
+                passwd = self.stage.get("passwd")
+                groups = self.stage.get("groups")
 
-            with utils.Chroot(self.context, self.context.root) as chroot:
-                chroot.run(["useradd", *cmd, username])
+                with utils.Chroot(self.context, self.context.root) as chroot:
+                    chroot.run(["useradd", *cmd, username])
