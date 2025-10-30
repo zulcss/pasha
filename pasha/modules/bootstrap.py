@@ -9,14 +9,10 @@ import os
 import shutil
 import subprocess
 
-from rich.console import Console
-
 from pasha import exceptions
 from pasha.context import Context
 from pasha.log import complete_step, die
 from pasha.modules.base import ModuleBase
-
-console = Console()
 
 
 class Bootstrap(ModuleBase):
@@ -170,27 +166,26 @@ class Bootstrap(ModuleBase):
                 cmd.extend([repo])
 
             logging.info(f"Creating Debian system for {self.context.config.name}.")
-            with console.status("Running mmdebstrap, please wait.") as status:
-                try:
-                    proc = subprocess.Popen(
-                        cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True
+            try:
+                proc = subprocess.Popen(
+                    cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True
+                )
+                with open(logfile, "w") as log_file:
+                    for line in proc.stdout:
+                        if self.context.state.debug:
+                            logging.info(line.strip())
+                        log_file.write(line)
+                proc.wait()
+                if proc.returncode != 0:
+                    logging.info(
+                        f"mmdebstrap failed with return code - {proc.returncode}"
                     )
-                    with open(logfile, "w") as log_file:
-                        for line in proc.stdout:
-                            if self.context.state.debug:
-                                logging.info(line.strip())
-                            log_file.write(line)
-                    proc.wait()
-                    if proc.returncode != 0:
-                        logging.info(
-                            f"mmdebstrap failed with return code - {proc.returncode}"
-                        )
-                        die(
-                            f"Failed to run mmdebstrap.",
-                            hint=(f"Please see {logfile}."),
-                        )
-                except Exception as e:
                     die(
                         f"Failed to run mmdebstrap.",
                         hint=(f"Please see {logfile}."),
                     )
+            except Exception as e:
+                die(
+                    f"Failed to run mmdebstrap.",
+                    hint=(f"Please see {logfile}."),
+                )
