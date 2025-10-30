@@ -39,6 +39,10 @@ class Bootstrap(ModuleBase):
         """Bootstrap Debian based system."""
         with complete_step(f"Bootstrapping {self.context.config.name}"):
             logfile = self.context.staging.joinpath("mmdebstrap.log")
+            if os.path.exists(logfile):
+                logging.info(f"Removing existing {logfile}")
+                os.unlink(logfile)
+
             cmd = [
                 "mmdebstrap",
                 f"--architecture={self.context.stage.architecture}",
