@@ -1,3 +1,24 @@
+pasha (1.0.4) unstable; urgency=medium
+
+  * New upstream release:
+    - 1ad41c2 (HEAD -> v1.0.x, mine/v1.0.x) Housekeeping: correct all markdownlint (mdl) issues
+    - 2db088b Housekeeping: drop `rst` linting and invoke markdown linting
+    - 292b114 Documenation: Rename and populate the project README
+    - 1bb9fa2 Housekeeping: fixup docs/module.md
+    - eaae51c Housekeeping: add documentation for undocumented modules
+    - 9c240d4 Housekeeping: cleanup documentation of various "options"
+    - 07c7f9a Housekeeping: Cleanup cut-and-paste errors
+    - b58f6a1 Housekeeping: docs: fixup formatting
+    - 255e8a0 Housekeeping: cleaning spelling errors in markdown files
+    - 82b1212 user: Ensure disk is mounted
+    - aa85ee9 Refactor OCI container image support
+      This commit also fixes the following error while using "container.build":
+        Failed to unpack ....tar.gz: tar: ...: Cannot open: No such file or directory
+    - 5b9343a mount: Remove mounting while installing packages
+    - 6bbebeb bootstrap: add support for package caching via a cache proxy
+
+ -- William Lyu <William.Lyu@windriver.com>  Tue, 11 Nov 2025 18:45:53 -0500
+
 pasha (1.0.3) unstable; urgency=medium
 
   * Do not create /opt symlink:
