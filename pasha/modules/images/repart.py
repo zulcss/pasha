@@ -58,27 +58,23 @@ class RepartImage(ModuleBase):
 
         with complete_step(f"Creating disk configurations in {self.definitions}"):
             logging.info("Creating esp definition")
-            (self.definitions / "00-esp.conf").write_text(
-                f"""\
+            (self.definitions / "00-esp.conf").write_text(f"""\
                 [Partition]
                 Type=esp
                 Format=vfat
                 CopyFiles=/boot:/
                 SizeMinBytes={self.esp}
                 SizeMaxBytes={self.esp}
-                """
-            )
+                """)
 
             logging.info("Creating root definitions")
-            (self.definitions / "10-root.conf").write_text(
-                f"""\
+            (self.definitions / "10-root.conf").write_text(f"""\
                 [Partition]
                 Type=root
                 Format=ext4
                 CopyFiles=/
                 SizeMinBytes={self.root}
-                """
-            )
+                """)
 
     def create_disk(self):
         """Create a disk using systemd-repart."""
