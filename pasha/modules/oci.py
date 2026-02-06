@@ -35,7 +35,7 @@ class ContainerBase(ModuleBase):
 
 class ContainerCreate(ContainerBase):
     def run(self):
-        (layer, tag) = self.image.split(":")
+        layer, tag = self.image.split(":")
 
         with complete_step("Creating an OCI image layout"):
             if os.path.exists(layer):
