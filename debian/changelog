@@ -1,3 +1,16 @@
+pasha (1.0.5) bianca; urgency=medium
+
+  * New upstream release:
+    - 398d0072: Improve logging for OCI support
+    - 27ed5152: modules/cmd.py: add option to run the command from the mount point
+    - 9519a124: Replace SHARED_APTLY with APTLY_UPLOAD in CI configuration
+    - 054a1fe6: bootstrap: Fix debug output 
+    - 7bfc54e1: bootstrap: Remove mmdebstrap.log if exists
+    - 680a5fcd: Fix pep8 issues
+  * debian/salsa-ci.yaml: Update for bianca.
+
+ -- Chuck Short <charles.short@windriver.com>  Fri, 06 Feb 2026 08:46:04 -0500
+
 pasha (1.0.4) unstable; urgency=medium
 
   * New upstream release:
