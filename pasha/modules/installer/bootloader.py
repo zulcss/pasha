@@ -121,6 +121,55 @@ class BootloaderOstree(ModuleBase):
                             self.context.root.joinpath("efi/EFI/systemd/drivers"),
                             dirs_exist_ok=True,
                         )
+                    case "ostree-bianca":
+                        logging.info("Configuring UEFI bootloader")
+
+                        boot64_path = pathlib.Path(
+                            "/usr/lib/systemd/boot/efi/systemd-bootx64.efi"
+                        )
+                        refind_path = pathlib.Path(
+                            "/usr/share/refind/refind/drivers_x64/ext4_x64.efi"
+                        )
+
+                        if not boot64_path.exists():
+                            die(
+                                f"{boot64_path} does not exist.",
+                                hint="Install the systemd-boot-efi package.",
+                            )
+                        if not refind_path.exists():
+                            die(
+                                f"{refind_path} does not exist.",
+                                hint="Install the refind package.",
+                            )
+
+                        self.context.root.joinpath("efi/loader").mkdir(
+                            parents=True, exist_ok=True
+                        )
+                        self.context.root.joinpath("efi/loader/loader.conf").write_text(
+                            "timeout 1"
+                        )
+                        self.context.root.joinpath("efi/EFI/BOOT").mkdir(
+                            parents=True, exist_ok=True
+                        )
+                        self.context.root.joinpath("efi/EFI/systemd").mkdir(
+                            parents=True, exist_ok=True
+                        )
+                        self.context.root.joinpath("efi/EFI/systemd/drivers").mkdir(
+                            parents=True, exist_ok=True
+                        )
+
+                        shutil.copy(
+                            boot64_path,
+                            self.context.root.joinpath("efi/EFI/systemd"),
+                        )
+                        shutil.copy(
+                            boot64_path,
+                            self.context.root.joinpath("efi/EFI/BOOT/BOOTX64.EFI"),
+                        )
+                        shutil.copy(
+                            refind_path,
+                            self.context.root.joinpath("efi/EFI/systemd/drivers"),
+                        )
                     case "grub-efi":
                         logging.info("Setting up /usr/lib/ostree-grub")
                         grub_dir = repo_root.joinpath("usr/lib/ostree-grub")
