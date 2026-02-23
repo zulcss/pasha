@@ -1,3 +1,10 @@
+pasha (1.0.6) bianca; urgency=medium
+
+  * New upstream release:
+    - a50f1a97: ostree: Dont clobber /boot/loader directory
+
+ -- Chuck Short <charles.short@windriver.com>  Mon, 23 Feb 2026 13:38:43 -0500
+
 pasha (1.0.5) bianca; urgency=medium
 
   * New upstream release:
