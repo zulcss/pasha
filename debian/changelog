@@ -1,3 +1,9 @@
+pasha (1.0.6+26.04.01) aria; urgency=medium
+
+  * Backport 1.0.6 from bianca to aria.
+
+ -- Chuck Short <charles.short@windriver.com>  Tue, 24 Feb 2026 08:09:29 -0500
+
 pasha (1.0.6) bianca; urgency=medium
 
   * New upstream release:
