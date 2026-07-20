@@ -39,10 +39,12 @@ class TestUnpackMount(base.TestCase):
     def test_unpack_module_with_mount(self, mock_exists, mock_run):
         rootfs = self.state.workspace.joinpath("fake_name/rootfs")
         expected_calls = [
+            mock.call(["systemctl", "--version"], capture_output=True, text=True),
             mock.call(
                 ["systemd-dissect", "--mount", "--mkdir", "/dev/sda", rootfs],
                 check=True,
                 capture_output=True,
+                env={},
             ),
             mock.call(
                 [

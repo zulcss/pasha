@@ -37,4 +37,4 @@ class TestCopyCommand(base.TestCase):
         rootfs = self.tempdir.joinpath("fake_name/rootfs")
         rootfs.mkdir(parents=True, exist_ok=True)
         copy.Copy(self.state, self.config, self.stage).run()
-        self.assertEqual(len(mock_run.call_args_list), 3)
+        self.assertEqual(len(mock_run.call_args_list), 4)
