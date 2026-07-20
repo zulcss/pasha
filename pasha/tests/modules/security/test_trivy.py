@@ -39,10 +39,12 @@ class TestTrivy(base.TestCase):
         rootfs = self.tempdir.joinpath("fake_name/rootfs")
         cwd = pathlib.Path(os.getcwd()).resolve()
         expected_calls = [
+            mock.call(["systemctl", "--version"], capture_output=True, text=True),
             mock.call(
                 ["systemd-dissect", "--mount", "--mkdir", "/dev/sda", rootfs],
                 capture_output=True,
                 check=True,
+                env={},
             ),
             mock.call(
                 [
