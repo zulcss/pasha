@@ -1,4 +1,4 @@
-pasha (1.0.7) bianca; urgency=medium
+pasha (1.0.7-elxr1) bianca; urgency=medium
 
   * New upstream release:
     - 9b196a34: Fixing typo error in pasha/modules/images/repart.py
