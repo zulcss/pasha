@@ -26,7 +26,7 @@ class RepartImage(ModuleBase):
         if not shutil.which("systemd-repart"):
             die(
                 "systemd-repart binary is not installed",
-                die="Install the package via 'apt-get install -y systemd",
+                hint="Install the package via 'apt-get install -y systemd",
             )
 
         self.context = Context(self.state, self.config, self.stage)

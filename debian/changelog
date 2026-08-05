@@ -1,3 +1,10 @@
+pasha (1.0.7-elxr1) bianca; urgency=medium
+
+  * New upstream release:
+    - 9b196a34: Fixing typo error in pasha/modules/images/repart.py
+
+ -- Suhas J C <suhas.janagerechandra@windriver.com>  Tue, 04 Aug 2026 10:35:15 +0530
+
 pasha (1.0.6) bianca; urgency=medium
 
   * New upstream release:
