@@ -10,6 +10,7 @@ import logging
 import subprocess
 
 from pasha.log import complete_step, die
+from pasha.utils import systemd_version
 
 
 @contextlib.contextmanager
@@ -24,11 +25,18 @@ def mount_disk(disk, rootfs):
         yield None
         return
 
+    env = {}
+    version = systemd_version()
+    if version >= 261:
+        logging.info("Newer systemd detected, applying work around.")
+        env.update({"SYSTEMD_DISSECT_FSTYPE_XBOOTLDR": "ext4"})
+
     logging.debug("Mounting image...")
     subprocess.run(
         ["systemd-dissect", "--mount", "--mkdir", disk, rootfs],
         capture_output=True,
         check=True,
+        env=env,
     )
 
     try:
