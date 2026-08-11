@@ -1,3 +1,10 @@
+pasha (1.0.7elxr) bianca; urgency=medium
+
+  * New upstream release:
+    - 0fcf3d1f - Use systemd_dissect_fstype_xbootldr 
+
+ -- Chuck Short <charles.short@windriver.com>  Tue, 11 Aug 2026 09:36:08 -0400
+
 pasha (1.0.6) bianca; urgency=medium
 
   * New upstream release:
