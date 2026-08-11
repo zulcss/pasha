@@ -36,10 +36,12 @@ class TestShellCommand(base.TestCase):
     def test_run_shell(self, mock_exec):
         rootfs = self.tempdir.joinpath("fake_name/rootfs")
         expected_calls = [
+            mock.call(["systemctl", "--version"], capture_output=True, text=True),
             mock.call(
                 ["systemd-dissect", "--mount", "--mkdir", "/dev/sda", rootfs],
                 check=True,
                 capture_output=True,
+                env={},
             ),
             mock.call("pwd", shell=True, cwd=None),
             mock.call("ls -lh", shell=True, cwd=None),
@@ -58,10 +60,12 @@ class TestShellCommand(base.TestCase):
             {"commands": ["pwd", "ls -lh"], "from_root_dir": True}
         )
         expected_calls = [
+            mock.call(["systemctl", "--version"], capture_output=True, text=True),
             mock.call(
                 ["systemd-dissect", "--mount", "--mkdir", "/dev/sda", rootfs],
                 check=True,
                 capture_output=True,
+                env={},
             ),
             mock.call("pwd", shell=True, cwd=rootfs),
             mock.call("ls -lh", shell=True, cwd=rootfs),

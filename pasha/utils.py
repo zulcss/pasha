@@ -130,6 +130,12 @@ class Chroot(object):
             die(f"Failed to run command: " + e.stderr.decode("utf-8").strip())
 
 
+def systemd_version():
+    """Determine system version."""
+    version = subprocess.run(["systemctl", "--version"], capture_output=True, text=True)
+    return int(version.stdout.strip().split()[1])
+
+
 def fetch(source):
     """Fetch a file from a specific site."""
     a = urlparse(source)

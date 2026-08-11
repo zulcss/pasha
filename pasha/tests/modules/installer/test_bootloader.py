@@ -36,13 +36,27 @@ class TestSDBootloader(base.TestCase):
     @mock.patch("shutil.which")
     @mock.patch("pasha.bootloader.install_systemd_boot")
     @mock.patch("os.path.exists")
-    def test_sd_bootloader(self, mock_exists, mock_bootloader, mock_which, mock_run):
+    @mock.patch("os.rename")
+    @mock.patch("io.open")
+    @mock.patch("os.unlink")
+    def test_sd_bootloader(
+        self,
+        mock_unlink,
+        mock_open,
+        mock_rename,
+        mock_exists,
+        mock_bootloader,
+        mock_which,
+        mock_run,
+    ):
         rootfs = self.tempdir.joinpath("fake_name/rootfs")
         expected_calls = [
+            mock.call(["systemctl", "--version"], capture_output=True, text=True),
             mock.call(
                 ["systemd-dissect", "--mount", "--mkdir", "fake_image.img", rootfs],
                 check=True,
                 capture_output=True,
+                env={},
             ),
             mock.call(
                 [
