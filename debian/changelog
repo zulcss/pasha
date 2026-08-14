@@ -1,3 +1,10 @@
+pasha (1.0.8elxr) bianca; urgency=medium
+
+  * New upstream release:
+    - a9acb5ca - Fix TypeError in repart.py: use correct keyword argument for die()
+
+ -- Suhas J C <suhas.janagerechandra@windriver.com>  Thu, 14 Aug 2026 12:41:00 +0530
+
 pasha (1.0.7elxr) bianca; urgency=medium
 
   * New upstream release:
@@ -18,7 +25,7 @@ pasha (1.0.5) bianca; urgency=medium
     - 398d0072: Improve logging for OCI support
     - 27ed5152: modules/cmd.py: add option to run the command from the mount point
     - 9519a124: Replace SHARED_APTLY with APTLY_UPLOAD in CI configuration
-    - 054a1fe6: bootstrap: Fix debug output 
+    - 054a1fe6: bootstrap: Fix debug output
     - 7bfc54e1: bootstrap: Remove mmdebstrap.log if exists
     - 680a5fcd: Fix pep8 issues
   * debian/salsa-ci.yaml: Update for bianca.
@@ -28,7 +35,8 @@ pasha (1.0.5) bianca; urgency=medium
 pasha (1.0.4) unstable; urgency=medium
 
   * New upstream release:
-    - 1ad41c2 (HEAD -> v1.0.x, mine/v1.0.x) Housekeeping: correct all markdownlint (mdl) issues
+    - 1ad41c2 (HEAD -> v1.0.x, mine/v1.0.x) Housekeeping: correct all
+      markdownlint (mdl) issues
     - 2db088b Housekeeping: drop `rst` linting and invoke markdown linting
     - 292b114 Documenation: Rename and populate the project README
     - 1bb9fa2 Housekeeping: fixup docs/module.md
@@ -39,12 +47,14 @@ pasha (1.0.4) unstable; urgency=medium
     - 255e8a0 Housekeeping: cleaning spelling errors in markdown files
     - 82b1212 user: Ensure disk is mounted
     - aa85ee9 Refactor OCI container image support
-      This commit also fixes the following error while using "container.build":
-        Failed to unpack ....tar.gz: tar: ...: Cannot open: No such file or directory
+      This commit also fixes the following error while using
+      "container.build":
+      Failed to unpack ....tar.gz: tar: ...: Cannot open: No such file or
+      directory
     - 5b9343a mount: Remove mounting while installing packages
     - 6bbebeb bootstrap: add support for package caching via a cache proxy
 
- -- William Lyu <William.Lyu@windriver.com>  Tue, 11 Nov 2025 18:45:53 -0500
+ -- William Lyu <william.lyu@windriver.com>  Tue, 11 Nov 2025 18:45:53 -0500
 
 pasha (1.0.3) unstable; urgency=medium
 
@@ -57,12 +67,13 @@ pasha (1.0.2) unstable; urgency=medium
 
   * New upstream release:
     - 96399ab: Fix rs build --debug option should show more debug messages
-    - 5a2e2d6: loop.py: block and wait for all partitions to be available when attaching a disk image
+    - 5a2e2d6: loop.py: block and wait for all partitions to be available
+      when attaching a disk image
     - d7cbed1: Remove invalid Copyrights
     - 1671230: CI: use the elxr.yml recipe file
     - 300f928: CI: remove the unused `.gitlab-ci.yml` file
 
- -- William Lyu <William.Lyu@windriver.com>  Tue, 02 Sep 2025 15:04:24 -0400
+ -- William Lyu <william.lyu@windriver.com>  Tue, 02 Sep 2025 15:04:24 -0400
 
 pasha (1.0.1) unstable; urgency=medium
 
@@ -82,7 +93,7 @@ pasha (1.0.1) unstable; urgency=medium
     - 45b6ec2: Drop utils.deploy module documentation
     - 85c5931: Update "unpack.tarball" module
     - be110a8: Drop qemu module
-    - 74b2e90:  Update bootstrap module documentation
+    - 74b2e90: Update bootstrap module documentation
 
  -- Chuck Short <charles.short@windriver.com>  Wed, 30 Apr 2025 09:31:07 -0400
 
@@ -90,7 +101,8 @@ pasha (1.0.0) unstable; urgency=medium
 
   * New upstream release:
     - e2baf632: Add systemd-repart module to partition disks
-    - 6a008fab: Fix: Restore /etc/resolv.conf symlink correctly in chroot environments.
+    - 6a008fab: Fix: Restore /etc/resolv.conf symlink correctly in chroot
+      environments.
     - 45cfd169: Fix defect in command module
     - 14d08536: Fix spelling typos
     - 9e00608c: Add trivy vulnerability scanner
@@ -132,7 +144,7 @@ pasha (0.1.11) unstable; urgency=medium
   * New upstream release:
     - 3d827de3: Install dtb files into EFI partition
 
- -- Meng Li <Meng.Li@windriver.com>  Tue, 05 Nov 2024 09:44:46 +0800
+ -- Meng Li <meng.li@windriver.com>  Tue, 05 Nov 2024 09:44:46 +0800
 
 pasha (0.1.10) unstable; urgency=medium
 
@@ -145,7 +157,7 @@ pasha (0.1.10) unstable; urgency=medium
     - 6c9464df: Use "dpkg_opt" instead of "dpkg_opts"
     - 7cfbd087: Ensure consistiency of options passed to mmdebstrap
     - 6f19b072: Fix unit testing mocking for bootstrap module
-    - 2bd65220: Add module to run shell during manifest creation 
+    - 2bd65220: Add module to run shell during manifest creation
 
  -- Chuck Short <charles.short@windriver.com>  Fri, 18 Oct 2024 17:37:31 +0000
 
@@ -161,12 +173,12 @@ pasha (0.1.8) unstable; urgency=medium
   * New usptream release:
     - 5e632539 - Transition from Pablo to elxr.
 
- -- Chuck Short <zulcss@gmail.com>  Thu, 06 Jun 2024 14:58:36 +0000
+ -- Chuck Short <charles.short@windriver.com>  Thu, 06 Jun 2024 14:58:36 +0000
 
 pasha (0.1.7) unstable; urgency=medium
 
   [Chuck Short]
-  * debian/control: Add python3-omegaconf to build depends. 
+  * debian/control: Add python3-omegaconf to build depends.
   * debian/control: Add mmdebstrap to build depends.
 
   [Hongxu Jia]
