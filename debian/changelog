@@ -1,3 +1,10 @@
+pasha (1.0.8elxr) bianca; urgency=medium
+
+  * New upstream release:
+    - e570968 - Fix TypeError in repart.py: use correct keyword argument for die()
+
+ -- Suhas J C <suhas.janagerechandra@windriver.com>  Thu, 14 Aug 2026 12:41:00 +0530
+
 pasha (1.0.7elxr) bianca; urgency=medium
 
   * New upstream release:
