@@ -1,3 +1,10 @@
+pasha (1.0.7) bianca; urgency=medium
+
+  * New upstream relase:
+    - cdeccad7: Fix systemd bootloader.
+
+ -- Chuck Short <charles.short@windriver.com>  Mon, 14 Sep 2026 13:12:21 -0400
+
 pasha (1.0.6) bianca; urgency=medium
 
   * New upstream release:
